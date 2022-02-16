@@ -25,10 +25,6 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
