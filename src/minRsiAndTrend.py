@@ -57,7 +57,7 @@ class TestStrategy(bt.Strategy):
         if not self.trendFound:
             self.minRsiElement = self.rsi.index(min(self.rsi))
 
-        self.log("  Selected stock: %s" % self.datas[self.minRsiElement].params.dataname.split("/")[-1])
+        self.log("  Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
         if self.positioncount == 0:
             self.log(" buying ")
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         "EWA",
         "EWH",
         "EWQ",
-        #
+
         # "XLU",
         # "XLE",
         # "XLV",
@@ -152,10 +152,10 @@ if __name__ == '__main__':
 
         # "IWMO.L",
         # "MVOL.L",
+        # "IWVL.L",
 
         # "SHY",
         # "VT",
-        # "IWVL.L",
         # "VTV"
         # "USMV"
         # "BLOK",
@@ -192,7 +192,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=datetime.datetime(1970, 1, 1))
+            fromdate=datetime.datetime(1900, 10, 5))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 

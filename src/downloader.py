@@ -4,10 +4,12 @@ tickers = [
 
     # "TQQQ"
     # "BLOK"
-    # "MVOL.L"
     # "IWVL.L"
     # "USMV",
 
+    "MVOL.L"
+    "IWMO.L"
+    
     # "VTI"
     # "DIA",
     # "DFAT",
