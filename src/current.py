@@ -2,16 +2,11 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
 
 # Import the backtrader platform
 import backtrader as bt
 import locale
 
-import pprint
-
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
 
 day = 0
 
@@ -40,14 +35,8 @@ class TestStrategy(bt.Strategy):
         self.trendFound = False
 
     def next(self):
-        self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
-
-        # if self.buyStock:
-        #     self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
-        #     self.buyStock = False
-        #     return
 
         self.trendFound = False
         for i in range(len(self.datas)):
@@ -58,12 +47,13 @@ class TestStrategy(bt.Strategy):
         if not self.trendFound:
             self.minRsiElement = self.rsi.index(min(self.rsi))
 
+        if self.datas[0].datetime.date(0) == datetime.date.today():
+            self.log("=======================================")
+
         self.log("  Selected stock: %s" % self.datas[self.minRsiElement].params.dataname.split("/")[-1])
 
-        # if not self.broker.getposition(datas[self.minRsiElement]):
-        #     for i in range(len(self.datas)):
-        #         self.close(data=self.datas[i])
-        #     self.buyStock = True
+        if self.datas[0].datetime.date(0) == datetime.date.today():
+            self.log("=======================================")
 
 
     def notify_order(self, order):
@@ -106,63 +96,21 @@ if __name__ == '__main__':
 
     tickers = [
 
-        "SPY",
-        "MDY",
-        "EWJ",
-        "EWC",
-        "EWU",
-        "EWG",
-        "EWL",
-        "EWA",
-        "EWH",
-        "EWQ",
-
-        # "EWW",
-        # "EWI",
-        # "EWD",
-        # "EWP",
-        # "EWS",
-        # "EWN",
-        # "EWM",
-        # "EWO",
-        # "EWK",
-        #
-        # "DIA",
-        # "VTI",
+        # "SPY",
+        # "MDY",
+        # "EWJ",
+        # "EWC",
+        # "EWU",
+        # "EWG",
+        # "EWL",
+        # "EWA",
+        # "EWH",
+        # "EWQ",
 
 
-        # "IWMO.L",
-        # "MVOL.L",
+        "IWMO.L",
+        "MVOL.L",
 
-        # "SHY",
-        # "VT",
-        # "IWVL.L",
-        # "VTV"
-        # "BLOK",
-        # "QQQ",
-        # "XLF",
-        # "IWM"
-        # "TSLA",
-        # "ATVI",
-        # "AAPL",
-        # "MSFT",
-        # "NVDA",
-        # "AMZN",
-        # "FB",
-        # "GS",
-        # "AMD",
-        # "GOOGL",
-        # "BABA",
-        # "JPM",
-        # "F",
-        # "GOOG",
-        # "TSM",
-        # "XOM",
-        # "BA",
-        # "HD",
-        # "BAC",
-        # "PYPL",
-        # "WFC"
     ]
 
     datas = []
@@ -172,7 +120,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
         # Do not pass values before this date
-        fromdate=datetime.datetime(2021, 4, 11))
+        fromdate=datetime.date.today() - datetime.timedelta(days=310))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 
@@ -187,15 +135,9 @@ if __name__ == '__main__':
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
 
-    # Print out the starting conditions
-    print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-
     # Run over everything
     run = cerebro.run()
 
     # cerebro.plot()
     locale.setlocale(locale.LC_ALL, 'en_US')
 
-    # Print out the final result
-    print("--------------------------------------")
-    print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))

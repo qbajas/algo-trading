@@ -7,25 +7,25 @@ tickers = [
     # "IWVL.L"
     # "USMV",
 
-    "MVOL.L"
-    "IWMO.L"
-    
+    "MVOL.L",
+    "IWMO.L",
+
     # "VTI"
     # "DIA",
     # "DFAT",
     # "DFAS"
 
     # oldest part 1
-    "SPY",
-    "MDY",
-    "EWJ",
-    "EWC",
-    "EWU",
-    "EWG",
-    "EWL",
-    "EWA",
-    "EWH",
-    "EWQ",
+    # "SPY",
+    # "MDY",
+    # "EWJ",
+    # "EWC",
+    # "EWU",
+    # "EWG",
+    # "EWL",
+    # "EWA",
+    # "EWH",
+    # "EWQ",
 
     # oldest part 2
     # "EWW",
@@ -271,7 +271,7 @@ tickers = [
 ]
 
 for ticker in tickers:
-    url = "https://query1.finance.yahoo.com/v7/finance/download/" + ticker + "?period1=0&period2=1689241600&interval=1d&events=history"
+    url = "https://query1.finance.yahoo.com/v7/finance/download/" + ticker + "?period1=0&period2=2689241600&interval=1d&events=history"
     print(url)
     header = {'Connection': 'keep-alive',
               'Expires': '-1',
