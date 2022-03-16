@@ -25,7 +25,7 @@ class TestStrategy(bt.Strategy):
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
-            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=14))
+            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
         self.sma = []
         for i in range(len(self.datas)):
             self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
@@ -48,12 +48,12 @@ class TestStrategy(bt.Strategy):
             self.minRsiElement = self.rsi.index(min(self.rsi))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
-            self.log("=======================================")
+            self.log("---------------")
 
-        self.log("  Selected stock: %s" % self.datas[self.minRsiElement].params.dataname.split("/")[-1])
+        self.log("Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
-            self.log("=======================================")
+            self.log("---------------")
 
 
     def notify_order(self, order):
