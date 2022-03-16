@@ -13,6 +13,11 @@ import pprint
 
 
 # Create a Stratey
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, AnnualReturn, Returns
+
+day = 0
+
+
 class TestStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
@@ -33,6 +38,9 @@ class TestStrategy(bt.Strategy):
         self.rsi = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
 
     def next(self):
+        global day
+        day += 1
+
         self.log("RSI %d, cash %d" % (self.rsi[0], self.sizer.broker.getcash()))
 
         if self.buyStock:
@@ -43,11 +51,11 @@ class TestStrategy(bt.Strategy):
             self.buy(data=self.datas[1], size=self.getsizing(self.datas[1]) * 0.95)
             self.buyBonds = False
 
-        if self.rsi > 80 and self.broker.getposition(datas[0]):
+        if self.rsi > 70 and self.broker.getposition(datas[0]):
             self.close(data=self.datas[0])
             self.buyBonds = True
 
-        if self.rsi < 50 and not self.broker.getposition(datas[0]):
+        if self.rsi < 60 and not self.broker.getposition(datas[0]):
             self.close(data=self.datas[1])
             self.buyStock = True
 
@@ -89,9 +97,15 @@ if __name__ == '__main__':
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
 
+    cerebro.addanalyzer(SharpeRatio)
+    cerebro.addanalyzer(TimeDrawDown)
+    cerebro.addanalyzer(PeriodStats)
+    cerebro.addanalyzer(AnnualReturn)
+    cerebro.addanalyzer(Returns)
+
     tickers = [
-        "QQQ",
-        "EWL"
+        "IWMO.L",
+        "MVOL.L"
     ]
 
     datas = []
@@ -102,8 +116,7 @@ if __name__ == '__main__':
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
             fromdate=datetime.datetime(1970, 1, 1),
-            # Do not pass values before this date
-            todate=datetime.datetime(2020, 12, 31))
+        )
 
         data.start()
 
@@ -113,13 +126,14 @@ if __name__ == '__main__':
         datas.append(data)
 
     # Set our desired cash start
-    cerebro.broker.setcash(100000.0)
+    cashstart = 100000.0
+    cerebro.broker.setcash(cashstart)
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     # Run over everything
-    cerebro.run()
+    run = cerebro.run()
 
     # cerebro.plot()
 
@@ -127,7 +141,11 @@ if __name__ == '__main__':
 
     # Print out the final result
     print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))
-    # print('Cach remaining: %.2f \n' % cerebro.broker.getcash())
-    # for data in datas:
-    #     print(data.params.dataname)
-    #     print(cerebro.broker.getposition(data))
+    print(locale.format_string("Annualized return: %f percent",
+                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
+                               grouping=True))
+
+    pp = pprint.PrettyPrinter(width=41, compact=True)
+    pp.pprint(run[0].analyzers[0].get_analysis())
+    pp.pprint(run[0].analyzers[1].get_analysis())
+    pp.pprint(run[0].analyzers[3].get_analysis())

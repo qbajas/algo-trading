@@ -12,8 +12,9 @@ import backtrader as bt
 import pprint
 
 # Create a Stratey
-from backtrader.analyzers import PeriodStats, AnnualReturn, Returns
+from backtrader.analyzers import PeriodStats, AnnualReturn, Returns, SharpeRatio, TimeDrawDown
 
+day = 0
 
 class TestStrategy(bt.Strategy):
 
@@ -27,6 +28,9 @@ class TestStrategy(bt.Strategy):
         self.buyStock = True
 
     def next(self):
+        global day
+        day += 1
+
         self.log(" cash %d" % (self.sizer.broker.getcash()))
 
         if self.buyStock:
@@ -68,12 +72,14 @@ if __name__ == '__main__':
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
 
+    cerebro.addanalyzer(SharpeRatio)
+    cerebro.addanalyzer(TimeDrawDown)
     cerebro.addanalyzer(PeriodStats)
     cerebro.addanalyzer(AnnualReturn)
     cerebro.addanalyzer(Returns)
 
     tickers = [
-        "SPY",
+        "IWMO.L",
     ]
 
     datas = []
@@ -82,10 +88,9 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
-            # Do not pass values before this date
-            fromdate=datetime.datetime(1970, 1, 1),
-            # Do not pass values before this date
-            todate=datetime.datetime(2020, 12, 31))
+            fromdate=datetime.datetime(2015, 7, 22),
+            # todate=datetime.datetime(2017, 7, 20)
+        )
 
         data.start()
 
@@ -95,7 +100,8 @@ if __name__ == '__main__':
         datas.append(data)
 
     # Set our desired cash start
-    cerebro.broker.setcash(100000.0)
+    cashstart = 100000.0
+    cerebro.broker.setcash(cashstart)
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
@@ -109,8 +115,11 @@ if __name__ == '__main__':
 
     # Print out the final result
     print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))
+    print(locale.format_string("Annualized return: %f percent",
+                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
+                               grouping=True))
 
     pp = pprint.PrettyPrinter(width=41, compact=True)
-    # pp.pprint(run[0].analyzers[0].get_analysis())
-    # pp.pprint(run[0].analyzers[1].get_analysis())
-    pp.pprint(run[0].analyzers[2].get_analysis())
+    pp.pprint(run[0].analyzers[0].get_analysis())
+    pp.pprint(run[0].analyzers[1].get_analysis())
+    pp.pprint(run[0].analyzers[3].get_analysis())

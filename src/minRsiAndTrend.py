@@ -25,16 +25,12 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
-            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=14))
+            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
         self.sma = []
         for i in range(len(self.datas)):
             self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
@@ -116,16 +112,16 @@ if __name__ == '__main__':
 
     tickers = [
 
-        "SPY",
-        "MDY",
-        "EWJ",
-        "EWC",
-        "EWU",
-        "EWG",
-        "EWL",
-        "EWA",
-        "EWH",
-        "EWQ",
+        # "SPY",
+        # "MDY",
+        # "EWJ",
+        # "EWC",
+        # "EWU",
+        # "EWG",
+        # "EWL",
+        # "EWA",
+        # "EWH",
+        # "EWQ",
 
         # "XLU",
         # "XLE",
@@ -150,8 +146,8 @@ if __name__ == '__main__':
         # "DIA",
         # "VTI",
 
-        # "IWMO.L",
-        # "MVOL.L",
+        "IWMO.L",
+        "MVOL.L",
         # "IWVL.L",
 
         # "SHY",
@@ -192,9 +188,8 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=datetime.datetime(1900, 10, 5))
-        # Do not pass values before this date
-        # todate=datetime.datetime(2015, 12, 31))
+            fromdate=datetime.datetime(2014, 10, 5)
+        )
 
         data.start()
 
