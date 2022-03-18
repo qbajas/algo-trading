@@ -186,3 +186,4 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[0].get_analysis())
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())

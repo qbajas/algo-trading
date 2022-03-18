@@ -472,6 +472,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\DWAQ.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\EA.csv">
           <value>
             <Attribute>

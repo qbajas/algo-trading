@@ -10,8 +10,12 @@ import backtrader as bt
 
 import pprint
 
-
 # Create a Stratey
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, AnnualReturn, Returns
+
+day = 0
+
+
 class TestStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
@@ -20,10 +24,6 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
@@ -31,41 +31,37 @@ class TestStrategy(bt.Strategy):
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=14))
 
+        self.sma = []
+        for i in range(len(self.datas)):
+            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=126))
+
     def next(self):
-        # Simply log the closing price of the series from the reference
-        # self.log('RSI0, %.2f' % self.rsi0[0])
-        # self.log('RSI1, %.2f' % self.rsi1[0])
-        # self.buy(data=self.datas[1], size=self.getsizing(self.datas[1]) * 0.9)
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
 
-        for i in range(len(self.datas)):
-            if self.positioncount > 0 and self.rsi[i] > 70 and self.broker.getposition(datas[i]):
-                self.close(data=self.datas[i])
+        global day
+        day += 1
 
-        for i in range(len(self.datas)):
-            if self.positioncount < 10 and self.rsi[i] < 40 and not self.broker.getposition(datas[i]):
-                self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.95 / (10 - self.positioncount))
+        if (day % 5 == 0):
+            self.maxRsi = 0
+            for i in range(len(self.datas)):
+                if self.rsi[i] > 80:
+                    self.maxRsi += 1
+            self.log("maxRsi: %d" % (self.maxRsi))
 
-        # if self.positioncount == 0:
-        #     for i in range(len(self.datas)):
-        #         self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.9 / (len(self.datas)))
+            for i in range(len(self.datas)):
+                if self.rsi[i] > 80:
+                    self.close(data=self.datas[i])
 
-        # if (self.rsi0[0] < self.rsi1[0]):
-        #     if self.broker.getposition(datas[1]):
-        #         self.log('SELL DATA1')
-        #         self.close(data=self.datas[1])
-        #     if not self.broker.getposition(datas[0]):
-        #         # BUY, BUY, BUY!!! (with all possible default parameters)
-        #         self.log('BUY DATA0, %.2f , size %f, cash %d' % (self.datas[0].close[0], self.getsizing(self.datas[0]), self.sizer.broker.getcash()))
-        #         self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.9)
-        # else:
-        #     if self.broker.getposition(datas[0]):
-        #         self.log('SELL DATA0')
-        #         self.close(data=self.datas[0])
-        #     if not self.broker.getposition(datas[1]):
-        #         # BUY, BUY, BUY!!! (with all possible default parameters)
-        #         self.log('BUY DATA1, %.2f , size %d' % (self.datas[1].close[0], self.getsizing(self.datas[1])))
-        #         self.buy(data=self.datas[1], size=self.getsizing(self.datas[1]) * 0.9)
+        if (day % 5 == 1):
+            self.minRsi = 0
+            for i in range(len(self.datas)):
+                if self.rsi[i] < 40 and self.sma[i] <= self.datas[i].close:
+                    self.minRsi += 1
+            self.log("minRsi: %d" % (self.minRsi))
+
+            for i in range(len(self.datas)):
+                if self.rsi[i] < 40 and self.sma[i] <= self.datas[i].close:
+                    self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.9 / self.minRsi)
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -104,7 +100,12 @@ if __name__ == '__main__':
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
 
-    # TODO how to get a historical tickers e.g. companies which do not longer exist
+    cerebro.addanalyzer(SharpeRatio)
+    cerebro.addanalyzer(TimeDrawDown)
+    cerebro.addanalyzer(PeriodStats)
+    cerebro.addanalyzer(AnnualReturn)
+    cerebro.addanalyzer(Returns)
+
 
     tickers = [
         "SPY",
@@ -153,12 +154,16 @@ if __name__ == '__main__':
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     # Run over everything
-    cerebro.run()
+    run = cerebro.run()
 
     # cerebro.plot()
 
     # Print out the final result
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-    # for data in datas:
-    #     print(data.params.dataname)
-    #     print(cerebro.broker.getposition(data))
+
+    pp = pprint.PrettyPrinter(width=41, compact=True)
+    pp.pprint(run[0].analyzers[0].get_analysis())
+    pp.pprint(run[0].analyzers[1].get_analysis())
+    pp.pprint(run[0].analyzers[2].get_analysis())
+    pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())
