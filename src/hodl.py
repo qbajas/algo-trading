@@ -79,7 +79,7 @@ if __name__ == '__main__':
     cerebro.addanalyzer(Returns)
 
     tickers = [
-        "IWMO.L",
+        "VT",
     ]
 
     datas = []
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
-            fromdate=datetime.datetime(2015, 7, 22),
+            # fromdate=datetime.datetime(2015, 7, 22),
             # todate=datetime.datetime(2017, 7, 20)
         )
 

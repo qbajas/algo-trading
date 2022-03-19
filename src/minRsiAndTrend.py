@@ -146,6 +146,7 @@ if __name__ == '__main__':
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
             fromdate=bt.datetime.datetime(2000, 1, 1)
+            # fromdate=bt.datetime.datetime(2014, 10, 5)
         )
 
         data.start()
