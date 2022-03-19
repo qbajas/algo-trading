@@ -128,7 +128,7 @@ if __name__ == '__main__':
         "XLP",
         "XLY",
 
-        # "EWZ"
+        "EWZ",
 
         # "QQQ",
         # "IWM",
