@@ -1,17 +1,12 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
+import locale
+import pprint
 
 # Import the backtrader platform
 import backtrader as bt
-import locale
-
-import pprint
-
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
 
 day = 0
 
@@ -112,73 +107,35 @@ if __name__ == '__main__':
 
     tickers = [
 
-        # "SPY",
-        # "MDY",
-        # "EWJ",
-        # "EWC",
-        # "EWU",
-        # "EWG",
-        # "EWL",
-        # "EWA",
-        # "EWH",
-        # "EWQ",
+        "SPY",
+        "MDY",
+        "EWJ",
+        "EWC",
+        "EWU",
+        "EWG",
+        "EWL",
+        "EWA",
+        "EWH",
+        "EWQ",
 
-        # "XLU",
-        # "XLE",
-        # "XLV",
-        # "XLB",
-        # "XLF",
-        # "XLI",
-        # "XLK",
-        # "XLP",
-        # "XLY",
+        "XLU",
+        "XLE",
+        "XLV",
+        "XLB",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLY",
 
-        # "EWW",
-        # "EWI",
-        # "EWD",
-        # "EWP",
-        # "EWS",
-        # "EWN",
-        # "EWM",
-        # "EWO",
-        # "EWK",
-        #
-        # "DIA",
-        # "VTI",
+        # "EWZ"
 
-        "IWMO.L",
-        "MVOL.L",
-        # "IWVL.L",
-
-        # "SHY",
-        # "VT",
-        # "VTV"
-        # "USMV"
-        # "BLOK",
         # "QQQ",
-        # "XLF",
-        # "IWM"
-        # "TSLA",
-        # "ATVI",
-        # "AAPL",
-        # "MSFT",
-        # "NVDA",
-        # "AMZN",
-        # "FB",
-        # "GS",
-        # "AMD",
-        # "GOOGL",
-        # "BABA",
-        # "JPM",
-        # "F",
-        # "GOOG",
-        # "TSM",
-        # "XOM",
-        # "BA",
-        # "HD",
-        # "BAC",
-        # "PYPL",
-        # "WFC"
+        # "IWM",
+
+        # "IWMO.L",
+        # "MVOL.L",
+
     ]
 
     datas = []
@@ -188,7 +145,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=datetime.datetime(2014, 10, 5)
+            fromdate=bt.datetime.datetime(2000, 1, 1)
         )
 
         data.start()
@@ -221,3 +178,4 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[0].get_analysis())
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())

@@ -106,6 +106,16 @@ if __name__ == '__main__':
         # "EWA",
         # "EWH",
         # "EWQ",
+        #
+        # "XLU",
+        # "XLE",
+        # "XLV",
+        # "XLB",
+        # "XLF",
+        # "XLI",
+        # "XLK",
+        # "XLP",
+        # "XLY",
 
 
         "IWMO.L",
