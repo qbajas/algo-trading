@@ -1,17 +1,12 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
+import locale
+import pprint
 
 # Import the backtrader platform
 import backtrader as bt
-import locale
-
-import pprint
-
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
 
 day = 0
 
@@ -25,34 +20,43 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
+        self.sma = []
+        for i in range(len(self.datas)):
+            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=250))
 
-        self.minRsiElement = 0
+        self.buyStock = True
+        self.foundWithinTrend = False
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
 
-        self.minRsiElement = self.rsi.index(min(self.rsi))
+        self.foundWithinTrend = False
+        self.minRsiElement = 1
+        for i in range(1,len(self.datas)):
+            if self.rsi[i] <= self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
+                self.minRsiElement = i
+                self.foundWithinTrend = True
 
-        self.log("  Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        if not self.foundWithinTrend:
+            self.log("trend not found")
+            self.minRsiElement = 0
+
+        self.log("  Selected stock: %s (RSI %d, SMA %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
 
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])
 
-            self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
+            self.log(" buying ")
             self.buy(data=self.datas[self.minRsiElement],  size=self.getsizing(self.datas[self.minRsiElement]))
 
 
@@ -76,7 +80,7 @@ class TestStrategy(bt.Strategy):
                 )
             self.bar_executed = len(self)
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected')
+            self.log('WARNING: Order Canceled/Margin/Rejected %s' % order.status)
         self.order = None
 
     def notify_trade(self, trade):
@@ -88,7 +92,8 @@ class TestStrategy(bt.Strategy):
 
 if __name__ == '__main__':
     # Create a cerebro entity
-    cerebro = bt.Cerebro(cheat_on_open=True)
+    # cerebro = bt.Cerebro(cheat_on_open=True)
+    cerebro = bt.Cerebro()
 
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
@@ -100,6 +105,9 @@ if __name__ == '__main__':
     cerebro.addanalyzer(Returns)
 
     tickers = [
+
+        # first one needs to be bonds
+        "SHY",
 
         "SPY",
         "MDY",
@@ -124,6 +132,9 @@ if __name__ == '__main__':
 
         "EWZ",
 
+        # "QQQ",
+        # "IWM",
+
         # "IWMO.L",
         # "MVOL.L",
 
@@ -136,9 +147,8 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            # fromdate=datetime.datetime(2015, 7, 20),
-            fromdate=bt.datetime.datetime(2001, 1, 1)
-            # todate=datetime.datetime(2017, 7, 20)
+            fromdate=bt.datetime.datetime(2000, 1, 1)
+            # fromdate=bt.datetime.datetime(2014, 10, 5)
         )
 
         data.start()

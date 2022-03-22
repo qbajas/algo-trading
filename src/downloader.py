@@ -40,9 +40,14 @@ tickers = [
     "XLY",
 
     # various
-    # "EWZ"
+    "EWZ"
     # "QQQ",
     # "IWM",
+    
+    # bonds
+    "SHY",
+    "TBT",
+    "LTPZ",
 
 
 ]

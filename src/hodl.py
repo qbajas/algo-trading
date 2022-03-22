@@ -88,7 +88,7 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
-            # fromdate=datetime.datetime(2015, 7, 22),
+            fromdate=bt.datetime.datetime(2000, 10, 1)
             # todate=datetime.datetime(2017, 7, 20)
         )
 

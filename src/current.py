@@ -30,27 +30,25 @@ class TestStrategy(bt.Strategy):
         for i in range(len(self.datas)):
             self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
 
-        self.buyStock = False
         self.minRsiElement = 0
-        self.trendFound = False
 
     def next(self):
         global day
         day += 1
 
-        self.trendFound = False
-        for i in range(len(self.datas)):
-            if self.rsi[i] < self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
+        self.foundWithinTrend = False
+        for i in range(0,len(self.datas)):
+            if self.rsi[i] <= self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
                 self.minRsiElement = i
-                self.trendFound = True
+                self.foundWithinTrend = True
 
-        if not self.trendFound:
+        if not self.foundWithinTrend:
             self.minRsiElement = self.rsi.index(min(self.rsi))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
-        self.log("Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        self.log("Selected stock: %s (RSI %d, SMA %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
@@ -96,30 +94,28 @@ if __name__ == '__main__':
 
     tickers = [
 
-        # "SPY",
-        # "MDY",
-        # "EWJ",
-        # "EWC",
-        # "EWU",
-        # "EWG",
-        # "EWL",
-        # "EWA",
-        # "EWH",
-        # "EWQ",
-        #
-        # "XLU",
-        # "XLE",
-        # "XLV",
-        # "XLB",
-        # "XLF",
-        # "XLI",
-        # "XLK",
-        # "XLP",
-        # "XLY",
+        "SPY",
+        "MDY",
+        "EWJ",
+        "EWC",
+        "EWU",
+        "EWG",
+        "EWL",
+        "EWA",
+        "EWH",
+        "EWQ",
 
+        "XLU",
+        "XLE",
+        "XLV",
+        "XLB",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLY",
 
-        "IWMO.L",
-        "MVOL.L",
+        "EWZ",
 
     ]
 

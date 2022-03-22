@@ -32,34 +32,32 @@ class TestStrategy(bt.Strategy):
 
         self.buyStock = True
         self.minRsiElement = 0
-        self.trendFound = False
+        self.foundWithinTrend = False
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
 
-        self.trendFound = False
-        for i in range(len(self.datas)):
-            if self.rsi[i] < self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
+        self.foundWithinTrend = False
+        for i in range(0,len(self.datas)):
+            if self.rsi[i] <= self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
                 self.minRsiElement = i
-                self.trendFound = True
+                self.foundWithinTrend = True
 
-        if not self.trendFound:
+        if not self.foundWithinTrend:
+            self.log("trend not found")
             self.minRsiElement = self.rsi.index(min(self.rsi))
 
-        self.log("  Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
-
-        if self.positioncount == 0:
-            self.log(" buying ")
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.04)
-            return
+        self.log("  Selected stock: %s (RSI %d, SMA %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
 
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])
+
+            self.log(" buying ")
+            self.buy(data=self.datas[self.minRsiElement],  size=self.getsizing(self.datas[self.minRsiElement]))
 
 
     def notify_order(self, order):
@@ -82,7 +80,7 @@ class TestStrategy(bt.Strategy):
                 )
             self.bar_executed = len(self)
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected')
+            self.log('WARNING: Order Canceled/Margin/Rejected %s' % order.status)
         self.order = None
 
     def notify_trade(self, trade):
@@ -94,7 +92,8 @@ class TestStrategy(bt.Strategy):
 
 if __name__ == '__main__':
     # Create a cerebro entity
-    cerebro = bt.Cerebro(cheat_on_open=True)
+    # cerebro = bt.Cerebro(cheat_on_open=True)
+    cerebro = bt.Cerebro()
 
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
@@ -159,7 +158,7 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
-    cerebro.broker.setcommission(commission=0.000005)  # 0.0005% of the operation value
+    cerebro.broker.setcommission(leverage=100, commission=0.000005)  # 0.0005% of the operation value
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
