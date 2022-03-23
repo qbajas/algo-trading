@@ -42,7 +42,7 @@ tickers = [
     # various
     "EWZ",
     # "QQQ",
-    # "IWM",
+    "IWM",
     
     # bonds
     # "SHY",

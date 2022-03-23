@@ -133,7 +133,7 @@ if __name__ == '__main__':
         "EWZ",
 
         # "QQQ",
-        # "IWM",
+        "IWM",
 
         # "IWMO.L",
         # "MVOL.L",

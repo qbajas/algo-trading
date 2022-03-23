@@ -130,7 +130,7 @@ if __name__ == '__main__':
         "EWZ",
 
         # "QQQ",
-        # "IWM",
+        "IWM",
 
         # "IWMO.L",
         # "MVOL.L",
@@ -180,3 +180,10 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
     pp.pprint(run[0].analyzers[4].get_analysis())
+
+# Final Portfolio Value: 12,383,554
+# Annualized return: 25.986152 percent
+# OrderedDict([('sharperatio',
+#               1.0259176065085087)])
+# OrderedDict([('maxdrawdown',
+#               42.5299386042463),

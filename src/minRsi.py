@@ -123,6 +123,7 @@ if __name__ == '__main__':
         "XLY",
 
         "EWZ",
+        "IWM",
 
         # "IWMO.L",
         # "MVOL.L",
