@@ -40,7 +40,7 @@ tickers = [
     "XLY",
 
     # various
-    "EWZ"
+    "EWZ",
     # "QQQ",
     # "IWM",
     
