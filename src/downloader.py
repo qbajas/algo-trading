@@ -45,9 +45,9 @@ tickers = [
     # "IWM",
     
     # bonds
-    "SHY",
-    "TBT",
-    "LTPZ",
+    # "SHY",
+    # "TBT",
+    # "LTPZ",
 
 
 ]
