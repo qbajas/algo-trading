@@ -2,8 +2,8 @@ import requests
 
 tickers = [
 
-    "MVOL.L",
-    "IWMO.L",
+    # "MVOL.L",
+    # "IWMO.L",
 
     # oldest part 1
     "SPY",

@@ -48,7 +48,7 @@ class TestStrategy(bt.Strategy):
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
-        self.log("Selected stock: %s (RSI %d, SMA %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
+        self.log("Selected stock: %s (RSI %d, SMA %f)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
