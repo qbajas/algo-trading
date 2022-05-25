@@ -717,13 +717,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\resources\tickers\IWMO.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\resources\tickers\JD.csv">
           <value>
             <Attribute>
@@ -795,6 +788,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\LOW.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\LPTZ.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -1278,6 +1278,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\T.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\TBT.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

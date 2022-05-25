@@ -148,3 +148,50 @@ if __name__ == '__main__':
     # cerebro.plot()
     locale.setlocale(locale.LC_ALL, 'en_US')
 
+
+
+# from 2014:
+# minRsiFromTrend:
+# Final Portfolio Value: 336,177
+# Annualized return: 17.496206 percent
+# OrderedDict([('sharperatio',
+#               0.9282592346858832)])
+# OrderedDict([('maxdrawdown',
+#               42.530647318311814),
+#              ('maxdrawdownperiod', 281)])
+#
+#
+# doubleMinRsiFromTrend:
+# Final Portfolio Value: 338,756
+# Annualized return: 17.615701 percent
+# OrderedDict([('sharperatio',
+#               0.9612934930364905)])
+# OrderedDict([('maxdrawdown',
+#               44.32361203162356),
+#
+#
+# from 2000:
+# minRsiFromTrend:
+# Final Portfolio Value: 11,142,334
+# Annualized return: 25.221267 percent
+# OrderedDict([('sharperatio',
+#               0.9836698192209045)])
+# OrderedDict([('maxdrawdown',
+#               42.53064731831191),
+#
+# doubleMinRsiFromTrend:
+# Final Portfolio Value: 4,206,018
+# Annualized return: 19.533123 percent
+# OrderedDict([('sharperatio',
+#               0.9279661749056529)])
+# OrderedDict([('maxdrawdown',
+#               44.32361203162373),
+#
+#  doubleMinRsiFromTrend with MORE ETFs
+# Final Portfolio Value: 6,535,484
+# Annualized return: 22.073628 percent
+# OrderedDict([('sharperatio',
+#               0.8583002342340326)])
+# OrderedDict([('maxdrawdown',
+#               56.150983349748635),
+#              ('maxdrawdownperiod', 573)])

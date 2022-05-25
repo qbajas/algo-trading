@@ -34,8 +34,7 @@ class TestStrategy(bt.Strategy):
         self.log(" cash %d" % (self.sizer.broker.getcash()))
 
         if self.buyStock:
-            self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.95)
-            self.buyStock = False
+            self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.99)
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -47,6 +46,7 @@ class TestStrategy(bt.Strategy):
                 )
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
+                self.buyStock = False
             else:
                 self.log(
                     ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
@@ -123,3 +123,4 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[0].get_analysis())
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())
