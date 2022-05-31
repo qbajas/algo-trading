@@ -1,4 +1,4 @@
 Algotrading strategies for ETFs:
 - several trading strategies based on indicators such as RSI and SMA
-- allows backtesting the strategies on historical data
+- allows backtesting of the strategies using historical data
 - runs on Python 3.10 with backtrader framework
