@@ -2,54 +2,18 @@ import requests
 
 tickers = [
 
-    # "MVOL.L",
-    # "IWMO.L",
-
-    # oldest part 1
     "SPY",
-    "MDY",
-    "EWJ",
-    "EWC",
-    "EWU",
-    "EWG",
-    "EWL",
-    "EWA",
-    "EWH",
-    "EWQ",
-
-    # oldest part 2
-    # "EWW",
-    # "EWI",
-    # "EWD",
-    # "EWP",
-    # "EWS",
-    # "EWN",
-    # "EWM",
-    # "EWO",
-    # "EWK"
-
-    # us sectors
-    "XLU",
-    "XLE",
-    "XLV",
-    "XLB",
-    "XLF",
-    "XLI",
-    "XLK",
-    "XLP",
-    "XLY",
-
-    # various
-    "EWZ",
-    # "QQQ",
     "IWM",
-    
-    # bonds
-    # "SHY",
-    # "TBT",
-    # "LTPZ",
-
-
+    "QQQ",
+    "EFA",
+    "EEM",
+    "VNQ",
+    "LQD",
+    "GLD",
+    "SHY",
+    "IEF",
+    "TLT",
+    "AGG",
 ]
 
 for ticker in tickers:

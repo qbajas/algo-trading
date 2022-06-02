@@ -102,31 +102,17 @@ if __name__ == '__main__':
     tickers = [
 
         "SPY",
-        "MDY",
-        "EWJ",
-        "EWC",
-        "EWU",
-        "EWG",
-        "EWL",
-        "EWA",
-        "EWH",
-        "EWQ",
-
-        "XLU",
-        "XLE",
-        "XLV",
-        "XLB",
-        "XLF",
-        "XLI",
-        "XLK",
-        "XLP",
-        "XLY",
-
-        "EWZ",
         "IWM",
-
-        # "IWMO.L",
-        # "MVOL.L",
+        "QQQ",
+        "EFA",
+        "EEM",
+        "VNQ",
+        "LQD",
+        "GLD",
+        "SHY",
+        "IEF",
+        "TLT",
+        "AGG",
 
     ]
 
@@ -138,8 +124,8 @@ if __name__ == '__main__':
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
             # fromdate=datetime.datetime(2015, 7, 20),
-            fromdate=bt.datetime.datetime(2001, 1, 1)
-            # todate=datetime.datetime(2017, 7, 20)
+            fromdate=bt.datetime.datetime(2004, 11, 1),
+            todate=datetime.datetime(2018, 12, 31)
         )
 
         data.start()
