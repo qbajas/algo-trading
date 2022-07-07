@@ -8,7 +8,6 @@ import backtrader as bt
 import locale
 
 
-
 # Create a Stratey
 class TestStrategy(bt.Strategy):
 
@@ -24,14 +23,19 @@ class TestStrategy(bt.Strategy):
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
-        # self.sma = []
-        # for i in range(len(self.datas)):
-        #     self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
 
         self.minRsiElement = 0
 
     def next(self):
+        # print only last days
+        if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
+            return
+
         self.minRsiElement = self.rsi.index(min(self.rsi))
+
+        self.log("")
+        for i in range(len(self.datas)):
+            self.log(self.datas[i].params.dataname.split("/")[-1] + " " + str(self.rsi[i][0]))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
@@ -75,7 +79,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
         # Do not pass values before this date
-        fromdate=datetime.date.today() - datetime.timedelta(days=10))
+        fromdate=datetime.date.today() - datetime.timedelta(days=365))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 

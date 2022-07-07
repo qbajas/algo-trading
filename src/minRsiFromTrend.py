@@ -107,34 +107,17 @@ if __name__ == '__main__':
     tickers = [
 
         "SPY",
-        "MDY",
-        "EWJ",
-        "EWC",
-        "EWU",
-        "EWG",
-        "EWL",
-        "EWA",
-        "EWH",
-        "EWQ",
-
-        "XLU",
-        "XLE",
-        "XLV",
-        "XLB",
-        "XLF",
-        "XLI",
-        "XLK",
-        "XLP",
-        "XLY",
-
-        "EWZ",
-
-        # "QQQ",
         "IWM",
-
-        # "IWMO.L",
-        # "MVOL.L",
-
+        "QQQ",
+        "EFA",
+        "EEM",
+        "VNQ",
+        "LQD",
+        "GLD",
+        "SHY",
+        "IEF",
+        "TLT",
+        "AGG",
     ]
 
     datas = []
