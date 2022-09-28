@@ -54,6 +54,8 @@ class TestStrategy(bt.Strategy):
 
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
             self.buy(data=self.datas[self.minRsiElement],  size=self.getsizing(self.datas[self.minRsiElement]))
+            # alternative: limit buy
+            # self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.03)
 
 
     def notify_order(self, order):
