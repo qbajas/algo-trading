@@ -1,17 +1,12 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
+import locale
+import pprint
 
 # Import the backtrader platform
 import backtrader as bt
-import locale
-
-import pprint
-
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
 
 day = 0
 
@@ -25,10 +20,6 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
@@ -36,27 +27,59 @@ class TestStrategy(bt.Strategy):
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
 
-        self.minRsiElement = 0
+        self.buyStocksOnly = False
+        self.buyBondsOnly = False
+        self.doBuy = True
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
 
-        self.minRsiElement = self.rsi.index(min(self.rsi))
+        self.doBuy = False
+        for i in range(0, len(self.datas)):
+            if self.rsi[i] < 70:
+                self.doBuy = True
 
-        self.log("  Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        self.buyBondsOnly = True
+        for i in range(5, len(self.datas)):
+            if self.rsi[i] < 70:
+                self.buyBondsOnly = False
 
-        if not self.broker.getposition(datas[self.minRsiElement]):
+        self.buyStocksOnly = False
+        for i in range(5, len(self.datas)):
+            if self.rsi[i] < 30:
+                self.buyStocksOnly = True
+
+        if self.buyBondsOnly:
+            self.minRsiElement = 0
+            for i in range(0, 5):
+                if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                    self.minRsiElement = i
+
+        if self.buyStocksOnly:
+            self.minRsiElement = 5
+            for i in range(5, len(self.datas)):
+                if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                    self.minRsiElement = i
+
+        if not self.buyBondsOnly and not self.buyStocksOnly:
+            self.minRsiElement = 0
+            for i in range(0, len(self.datas)):
+                if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                    self.minRsiElement = i
+
+        # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
+        self.log("  Selected stock: %s (RSI %d)" % (
+        self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+
+        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])
 
-            self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-            self.buy(data=self.datas[self.minRsiElement],  size=self.getsizing(self.datas[self.minRsiElement]))
-            # alternative: limit buy
-            # self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.03)
-
+            self.log(" buying ")
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]))
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -78,7 +101,7 @@ class TestStrategy(bt.Strategy):
                 )
             self.bar_executed = len(self)
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected')
+            self.log('WARNING: Order Canceled/Margin/Rejected %s' % order.status)
         self.order = None
 
     def notify_trade(self, trade):
@@ -90,7 +113,8 @@ class TestStrategy(bt.Strategy):
 
 if __name__ == '__main__':
     # Create a cerebro entity
-    cerebro = bt.Cerebro(cheat_on_open=True)
+    # cerebro = bt.Cerebro(cheat_on_open=True)
+    cerebro = bt.Cerebro()
 
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
@@ -103,18 +127,19 @@ if __name__ == '__main__':
 
     tickers = [
 
+        "SHY",
+        "IEF",
+        "TLT",
+        "AGG",
+        "LQD",
+
         "SPY",
         "IWM",
         "QQQ",
         "EFA",
         "EEM",
         "VNQ",
-        "LQD",
         "GLD",
-        "SHY",
-        "IEF",
-        "TLT",
-        "AGG",
 
     ]
 
@@ -125,10 +150,8 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-
             fromdate=bt.datetime.datetime(2010, 1, 1)
-            # fromdate=bt.datetime.datetime(2004, 11, 1),
-            # todate=datetime.datetime(2018, 12, 31)
+            # fromdate=bt.datetime.datetime(2014, 10, 5)
         )
 
         data.start()
