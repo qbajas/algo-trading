@@ -36,16 +36,19 @@ class TestStrategy(bt.Strategy):
         global day
         day += 1
 
+        # buy if any rsi below 70
         self.doBuy = False
         for i in range(0, len(self.datas)):
             if self.rsi[i] < 70:
                 self.doBuy = True
 
-        self.buyBondsOnly = True
-        for i in range(5, len(self.datas)):
-            if self.rsi[i] < 70:
-                self.buyBondsOnly = False
+        # buy bonds if all stock rsi over 70
+        # self.buyBondsOnly = True
+        # for i in range(5, len(self.datas)):
+        #     if self.rsi[i] < 70:
+        #         self.buyBondsOnly = False
 
+        # buy stocks if any stock rsi below 30
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
             if self.rsi[i] < 30:
@@ -150,7 +153,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=bt.datetime.datetime(2015, 11, 1)
+            fromdate=bt.datetime.datetime(2000, 1, 1)
             # fromdate=bt.datetime.datetime(2014, 10, 5)
         )
 
