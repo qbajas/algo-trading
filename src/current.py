@@ -31,7 +31,25 @@ class TestStrategy(bt.Strategy):
         if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
             return
 
-        self.minRsiElement = self.rsi.index(min(self.rsi))
+        # buy if any rsi below 70
+        self.doBuy = False
+        for i in range(0, len(self.datas)):
+            if self.rsi[i] < 70:
+                self.doBuy = True
+
+        # buy stocks if any stock rsi below 30
+        self.buyStocksOnly = False
+        for i in range(5, len(self.datas)):
+            if self.rsi[i] < 30:
+                self.buyStocksOnly = True
+
+        if self.buyStocksOnly:
+            self.minRsiElement = 5
+            for i in range(5, len(self.datas)):
+                if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                    self.minRsiElement = i
+        else:
+            self.minRsiElement = self.rsi.index(min(self.rsi))
 
         self.log("")
         for i in range(len(self.datas)):
@@ -40,7 +58,10 @@ class TestStrategy(bt.Strategy):
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
-        self.log("Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        if self.doBuy:
+            self.log("Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        else:
+            self.log("Nothing to buy, close all positions")
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
@@ -88,7 +109,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
         # Do not pass values before this date
-        fromdate=datetime.date.today() - datetime.timedelta(days=365))
+        fromdate=datetime.date.today() - datetime.timedelta(days=200))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 
