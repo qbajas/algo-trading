@@ -109,7 +109,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
         # Do not pass values before this date
-        fromdate=datetime.date.today() - datetime.timedelta(days=200))
+        fromdate=datetime.date.today() - datetime.timedelta(days=365))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 
