@@ -102,30 +102,28 @@ if __name__ == '__main__':
     cerebro.addanalyzer(Returns)
 
     tickers = [
-
         "SHY",
         "IEF",
         "TLT",
         "AGG",
         "LQD",
 
-        # "SPY",
+        "SPY",
         "SPMO",
 
         "IWM",
 
-        # "QQQ",
+        "QQQ",
         "PTF",
 
-        # "EFA",
+        "EFA",
         "IDMO",
 
-        # "EEM",
+        "EEM",
         "EEMO",
 
         "VNQ",
         "GLD",
-
     ]
 
     datas = []

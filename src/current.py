@@ -57,19 +57,28 @@ if __name__ == '__main__':
 
     tickers = [
 
-        "SPY",
-        "IWM",
-        "QQQ",
-        "EFA",
-        "EEM",
-        "VNQ",
-        "LQD",
-        "GLD",
         "SHY",
         "IEF",
         "TLT",
         "AGG",
+        "LQD",
 
+        "SPY",
+        "SPMO",
+
+        "IWM",
+
+        "QQQ",
+        "PTF",
+
+        "EFA",
+        "IDMO",
+
+        "EEM",
+        "EEMO",
+
+        "VNQ",
+        "GLD",
     ]
 
     datas = []

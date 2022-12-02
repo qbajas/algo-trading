@@ -76,7 +76,7 @@ class TestStrategy(bt.Strategy):
         self.log("  Selected stock: %s (RSI %d)" % (
         self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
-        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy:
+        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy: # TODO wrong, it should sell when doBuy is false
             self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])

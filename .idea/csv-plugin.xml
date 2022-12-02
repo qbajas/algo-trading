@@ -206,6 +206,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\BNDX.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\BNTX.csv">
           <value>
             <Attribute>
@@ -493,6 +500,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\EDV.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\EEM.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\EFA.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\EOG.csv">
           <value>
             <Attribute>
@@ -605,6 +633,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\GLD.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\GM.csv">
           <value>
             <Attribute>
@@ -683,6 +718,20 @@
           </value>
         </entry>
         <entry key="\resources\tickers\IBM.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\IDMO.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\IEF.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -801,7 +850,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\LQD.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\LRCX.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\LTPZ.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -1256,6 +1319,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\SPIP.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\SPY.csv">
           <value>
             <Attribute>
@@ -1306,6 +1376,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\TGT.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\TLT.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -1474,6 +1551,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\X.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\XMVM.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
