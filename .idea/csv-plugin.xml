@@ -514,6 +514,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\EEMO.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\EFA.csv">
           <value>
             <Attribute>
@@ -1165,6 +1172,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\PTF.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\PTON.csv">
           <value>
             <Attribute>
@@ -1320,6 +1334,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\SPIP.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\SPMO.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

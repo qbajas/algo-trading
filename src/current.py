@@ -87,17 +87,12 @@ if __name__ == '__main__':
         "SPY",
         "SPMO",
 
-        "IWM",
-
         "QQQ",
         "PTF",
 
+        "IWM",
         "EFA",
-        "IDMO",
-
         "EEM",
-        "EEMO",
-
         "VNQ",
         "GLD",
     ]
