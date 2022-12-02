@@ -76,7 +76,12 @@ class TestStrategy(bt.Strategy):
         self.log("  Selected stock: %s (RSI %d)" % (
         self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
-        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy: # TODO wrong, it should sell when doBuy is false
+        if not self.doBuy:
+            self.log(" selling ")
+            for i in range(len(self.datas)):
+                self.close(data=self.datas[i])
+
+        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])
@@ -137,10 +142,19 @@ if __name__ == '__main__':
         "LQD",
 
         "SPY",
+        "SPMO",
+
         "IWM",
+
         "QQQ",
+        "PTF",
+
         "EFA",
+        "IDMO",
+
         "EEM",
+        "EEMO",
+
         "VNQ",
         "GLD",
 
@@ -153,7 +167,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=bt.datetime.datetime(2000, 1, 1)
+            fromdate=bt.datetime.datetime(2015, 11, 1)
             # fromdate=bt.datetime.datetime(2014, 10, 5)
         )
 
