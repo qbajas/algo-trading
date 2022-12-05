@@ -619,6 +619,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\FDMO.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\FTNT.csv">
           <value>
             <Attribute>
@@ -739,6 +746,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\IEF.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\IMTM.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -991,6 +1005,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\MT.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\MTUM.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

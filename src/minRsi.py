@@ -111,12 +111,12 @@ if __name__ == '__main__':
         "SPY",
         "SPMO",
 
-        "QQQ",
-        "PTF",
-
-        "IWM",
         "EFA",
+        "IMTM",
+
+        "QQQ",
         "EEM",
+        "IWM",
         "VNQ",
         "GLD",
 

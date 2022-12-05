@@ -10,17 +10,15 @@ tickers = [
     "SPY",
     "SPMO",
 
-    "IWM",
+    "EFA",
+    "IMTM",
 
     "QQQ",
-    "PTF",
-
-    "EFA",
-
     "EEM",
-
+    "IWM",
     "VNQ",
     "GLD",
+
 ]
 
 for ticker in tickers:
