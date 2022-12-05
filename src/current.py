@@ -31,16 +31,16 @@ class TestStrategy(bt.Strategy):
         if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
             return
 
-        # buy if any rsi below 70
+        # buy if any rsi below 90
         self.doBuy = False
         for i in range(0, len(self.datas)):
-            if self.rsi[i] < 70:
+            if self.rsi[i] < 90:
                 self.doBuy = True
 
-        # buy stocks if any stock rsi below 30
+        # buy stocks if any stock rsi below 10
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
-            if self.rsi[i] < 30:
+            if self.rsi[i] < 10:
                 self.buyStocksOnly = True
 
         if self.buyStocksOnly:

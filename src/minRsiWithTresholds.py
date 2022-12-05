@@ -39,7 +39,7 @@ class TestStrategy(bt.Strategy):
         # buy if any rsi below 70
         self.doBuy = False
         for i in range(0, len(self.datas)):
-            if self.rsi[i] < 70:
+            if self.rsi[i] < 90:
                 self.doBuy = True
 
         # buy bonds if all stock rsi over 70
@@ -51,7 +51,7 @@ class TestStrategy(bt.Strategy):
         # buy stocks if any stock rsi below 30
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
-            if self.rsi[i] < 30:
+            if self.rsi[i] < 10:
                 self.buyStocksOnly = True
 
         if self.buyBondsOnly:
