@@ -16,10 +16,8 @@ tickers = [
     "PTF",
 
     "EFA",
-    "IDMO",
 
     "EEM",
-    "EEMO",
 
     "VNQ",
     "GLD",
