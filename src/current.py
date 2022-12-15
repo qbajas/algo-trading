@@ -27,8 +27,9 @@ class TestStrategy(bt.Strategy):
         self.minRsiElement = 0
 
     def next(self):
+        self.previousMinRsiElement = self.minRsiElement
         # print only last days
-        if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
+        if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=17):
             return
 
         # buy if any rsi below 90
@@ -55,22 +56,27 @@ class TestStrategy(bt.Strategy):
         for i in range(len(self.datas)):
             self.log(self.datas[i].params.dataname.split("/")[-1] +
                      " RSI: " + str(self.rsi[i][0]) +
-                     " (price: " + str(self.datas[i][0])+")")
+                     " (price: " + str(self.datas[i][0]) + ")")
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
-        if self.doBuy:
-            self.log("Selected stock: %s (RSI %d, buy limit %s)" %
+        self.log("Selected stock: %s (RSI %d)" %
+                 (self.datas[self.minRsiElement].params.dataname.split("/")[-1],
+                  self.rsi[self.minRsiElement][0]))
+
+        if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
+            self.log("+ BUY %s limit %s " %
                      (self.datas[self.minRsiElement].params.dataname.split("/")[-1],
-                      self.rsi[self.minRsiElement][0],
-                      self.datas[self.minRsiElement][0]*1.02))
-        else:
-            self.log("Nothing to buy, close all positions")
+                      self.datas[self.minRsiElement][0] * 1.02))
+
+        if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
+            self.log("- SELL %s limit %s" %
+                     (self.datas[self.previousMinRsiElement].params.dataname.split("/")[-1],
+                      self.datas[self.previousMinRsiElement][0] * 0.98))
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
-
 
 
 if __name__ == '__main__':
@@ -79,7 +85,6 @@ if __name__ == '__main__':
 
     # Add a strategy
     cerebro.addstrategy(TestStrategy)
-
 
     tickers = [
 
@@ -108,8 +113,8 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
-        # Do not pass values before this date
-        fromdate=datetime.date.today() - datetime.timedelta(days=100))
+            # Do not pass values before this date
+            fromdate=datetime.date.today() - datetime.timedelta(days=100))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 
