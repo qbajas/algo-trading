@@ -53,13 +53,18 @@ class TestStrategy(bt.Strategy):
 
         self.log("")
         for i in range(len(self.datas)):
-            self.log(self.datas[i].params.dataname.split("/")[-1] + " " + str(self.rsi[i][0]))
+            self.log(self.datas[i].params.dataname.split("/")[-1] +
+                     " RSI: " + str(self.rsi[i][0]) +
+                     " (price: " + str(self.datas[i][0])+")")
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
         if self.doBuy:
-            self.log("Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+            self.log("Selected stock: %s (RSI %d, buy limit %s)" %
+                     (self.datas[self.minRsiElement].params.dataname.split("/")[-1],
+                      self.rsi[self.minRsiElement][0],
+                      self.datas[self.minRsiElement][0]*1.02))
         else:
             self.log("Nothing to buy, close all positions")
 
