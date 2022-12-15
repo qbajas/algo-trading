@@ -65,6 +65,9 @@ class TestStrategy(bt.Strategy):
                  (self.datas[self.minRsiElement].params.dataname.split("/")[-1],
                   self.rsi[self.minRsiElement][0]))
 
+        if self.datas[0].datetime.date(0) == datetime.date.today():
+            self.log("---------------")
+
         if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
             self.log("+ BUY %s limit %s " %
                      (self.datas[self.minRsiElement].params.dataname.split("/")[-1],
@@ -74,9 +77,6 @@ class TestStrategy(bt.Strategy):
             self.log("- SELL %s limit %s" %
                      (self.datas[self.previousMinRsiElement].params.dataname.split("/")[-1],
                       self.datas[self.previousMinRsiElement][0] * 0.98))
-
-        if self.datas[0].datetime.date(0) == datetime.date.today():
-            self.log("---------------")
 
 
 if __name__ == '__main__':
