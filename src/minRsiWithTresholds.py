@@ -74,21 +74,21 @@ class TestStrategy(bt.Strategy):
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log("  Selected stock: %s (RSI %d)" % (
-        self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+            self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
         if not self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0]*0.98)
+                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
 
         if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0]*0.98)
+                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
 
             self.log(" buying ")
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.02)
-
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.02)
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
