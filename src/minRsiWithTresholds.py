@@ -30,6 +30,7 @@ class TestStrategy(bt.Strategy):
         self.buyStocksOnly = False
         self.buyBondsOnly = False
         self.doBuy = True
+        self.previousMinRsiElement = None
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
@@ -55,22 +56,23 @@ class TestStrategy(bt.Strategy):
                 self.buyStocksOnly = True
 
         if self.buyBondsOnly:
-            self.minRsiElement = 0
-            for i in range(0, 5):
-                if self.rsi[i] <= self.rsi[self.minRsiElement]:
-                    self.minRsiElement = i
+            self.startRange = 0
+            self.endRange = 5
 
         if self.buyStocksOnly:
-            self.minRsiElement = 5
-            for i in range(5, len(self.datas)):
-                if self.rsi[i] <= self.rsi[self.minRsiElement]:
-                    self.minRsiElement = i
+            self.startRange = 5
+            self.endRange = len(self.datas)
 
         if not self.buyBondsOnly and not self.buyStocksOnly:
-            self.minRsiElement = 0
-            for i in range(0, len(self.datas)):
-                if self.rsi[i] <= self.rsi[self.minRsiElement]:
-                    self.minRsiElement = i
+            self.startRange = 0
+            self.endRange = len(self.datas)
+
+        self.minRsiElement = self.startRange
+        for i in range(self.startRange, self.endRange):
+            if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                self.minRsiElement = i
+        if self.previousMinRsiElement and self.previousMinRsiElement in range(self.startRange, self.endRange) and (self.rsi[self.previousMinRsiElement]) < 10:
+            self.minRsiElement = self.previousMinRsiElement
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log("  Selected stock: %s (RSI %d)" % (
@@ -89,6 +91,8 @@ class TestStrategy(bt.Strategy):
             self.log(" buying ")
             self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
                      exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.02)
+
+        self.previousMinRsiElement = self.minRsiElement
 
     def notify_order(self, order):
         if order.status in [order.Completed]:

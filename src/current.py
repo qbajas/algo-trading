@@ -29,7 +29,6 @@ class TestStrategy(bt.Strategy):
     def next(self):
         self.previousMinRsiElement = self.minRsiElement
 
-
         # --- START effective strategy ---
 
         # buy if any rsi below 90
@@ -45,15 +44,20 @@ class TestStrategy(bt.Strategy):
                 self.buyStocksOnly = True
 
         if self.buyStocksOnly:
-            self.minRsiElement = 5
-            for i in range(5, len(self.datas)):
-                if self.rsi[i] <= self.rsi[self.minRsiElement]:
-                    self.minRsiElement = i
+            self.startRange = 5
+            self.endRange = len(self.datas)
         else:
-            self.minRsiElement = self.rsi.index(min(self.rsi))
+            self.startRange = 0
+            self.endRange = len(self.datas)
+
+        self.minRsiElement = self.startRange
+        for i in range(self.startRange, self.endRange):
+            if self.rsi[i] <= self.rsi[self.minRsiElement]:
+                self.minRsiElement = i
+        if self.previousMinRsiElement and self.previousMinRsiElement in range(self.startRange, self.endRange) and (self.rsi[self.previousMinRsiElement]) < 10:
+            self.minRsiElement = self.previousMinRsiElement
 
         # --- END effective strategy ---
-
 
         # print only last days
         if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
@@ -95,12 +99,14 @@ if __name__ == '__main__':
 
     tickers = [
 
+        # first five need to be bonds
         "SHY",
         "IEF",
         "TLT",
         "AGG",
         "LQD",
 
+        # the rest need to be stocks
         "SPY",
         "SPMO",
 
