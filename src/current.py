@@ -65,8 +65,8 @@ class TestStrategy(bt.Strategy):
 
         self.log("")
         for i in range(len(self.datas)):
-            self.log(self.get_ticker_name(self.datas[i]) +
-                     " rsi: " + str(self.rsi[i][0]) +
+            self.log(self.get_ticker_name(self.datas[i]).ljust(4) +
+                     " rsi: " + str(round(self.rsi[i][0], 4)).ljust(7) +
                      " (price: " + str(self.datas[i][0]) + ")")
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
