@@ -117,7 +117,7 @@ if __name__ == '__main__':
         "SPY",
         # "SPMO",
         #
-        # "EFA",
+        "EFA",
         # "IMTM",
         #
         # "QQQ",
