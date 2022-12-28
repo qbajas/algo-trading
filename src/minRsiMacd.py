@@ -54,23 +54,14 @@ class TestStrategy(bt.Strategy):
 
         # self.minRsiElement = self.rsi.index(min(self.rsi))
 
-        self.minRsiElement = 0
-        self.doBuy = False
         for i in range(0, len(self.datas)):
-            if self.rsi[i] <= self.rsi[self.minRsiElement] and self.macd[i].macd >= self.macd[i].signal:
-                self.minRsiElement = i
-                self.doBuy = True
-
-        # self.log("  Selected stock: %s (RSI %d) MACD %s" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.macd[self.minRsiElement].macd > self.macd[self.minRsiElement].signal ))
-
-        if not self.broker.getposition(datas[self.minRsiElement]):
-            self.log(" selling ")
-            for i in range(len(self.datas)):
+            if self.rsi[i] > 70 and self.macd[i].macd < self.macd[i].signal:
                 self.close(data=self.datas[i])
 
-            if self.doBuy:
-                self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]))
+        for i in range(0, len(self.datas)):
+            if self.rsi[i] < 30 and self.macd[i].macd > self.macd[i].signal and not self.broker.getposition(datas[i]):
+                self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]))
+
 
 
     def notify_order(self, order):
@@ -85,7 +76,7 @@ class TestStrategy(bt.Strategy):
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
             else:
-                self.positioncount = 0
+                self.positioncount -= 1
                 self.log(
                     ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
                                                                          order.executed.value,
@@ -117,22 +108,22 @@ if __name__ == '__main__':
     cerebro.addanalyzer(Returns)
 
     tickers = [
-        "SHY",
-        "IEF",
-        "TLT",
-        "AGG",
-        "LQD",
+        # "SHY",
+        # "IEF",
+        # "TLT",
+        # "AGG",
+        # "LQD",
 
         "SPY",
-        "SPMO",
-
-        "EFA",
-        "IMTM",
-
-        "QQQ",
-        "EEM",
-        "IWM",
-        "VNQ",
+        # "SPMO",
+        #
+        # "EFA",
+        # "IMTM",
+        #
+        # "QQQ",
+        # "EEM",
+        # "IWM",
+        # "VNQ",
         "GLD",
 
     ]
@@ -142,7 +133,7 @@ if __name__ == '__main__':
     for ticker in tickers:
 
         data = bt.feeds.PandasData(
-            dataname=yf.download(ticker, '2021-01-01', '2022-12-27', auto_adjust=True, interval="1h" ))
+            dataname=yf.download(ticker, '2021-01-21', '2022-12-27', auto_adjust=True, interval="1h" ))
 
         data.start()
 
@@ -167,9 +158,9 @@ if __name__ == '__main__':
 
     # Print out the final result
     print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))
-    print(locale.format_string("Annualized return: %f percent",
-                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
-                               grouping=True))
+    # print(locale.format_string("Annualized return: %f percent",
+    #                            100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
+    #                            grouping=True))
 
     pp = pprint.PrettyPrinter(width=41, compact=True)
     pp.pprint(run[0].analyzers[0].get_analysis())
