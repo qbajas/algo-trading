@@ -37,7 +37,7 @@ class TestStrategy(bt.Strategy):
         global day
         day += 1
 
-        # buy if any rsi below 70
+        # buy only if some rsi below 90
         self.doBuy = False
         for i in range(0, len(self.datas)):
             if self.rsi[i] < 90:
@@ -49,7 +49,7 @@ class TestStrategy(bt.Strategy):
         #     if self.rsi[i] < 70:
         #         self.buyBondsOnly = False
 
-        # buy stocks if any stock rsi below 30
+        # buy stocks if any stock rsi below 10
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
             if self.rsi[i] < 10:
@@ -71,6 +71,8 @@ class TestStrategy(bt.Strategy):
         for i in range(self.startRange, self.endRange):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
+
+        #  keep the previous one if its rsi is lower than 10 and in range
         if self.previousMinRsiElement and self.previousMinRsiElement in range(self.startRange, self.endRange) and (self.rsi[self.previousMinRsiElement]) < 10:
             self.minRsiElement = self.previousMinRsiElement
 
