@@ -54,8 +54,6 @@ class TestStrategy(bt.Strategy):
         for i in range(self.startRange, self.endRange):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
-        if self.previousMinRsiElement and self.previousMinRsiElement in range(self.startRange, self.endRange) and (self.rsi[self.previousMinRsiElement]) < 10:
-            self.minRsiElement = self.previousMinRsiElement
 
         # --- END effective strategy ---
 

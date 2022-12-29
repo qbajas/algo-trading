@@ -72,10 +72,6 @@ class TestStrategy(bt.Strategy):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
 
-        #  keep the previous one if its rsi is lower than 10 and in range
-        if self.previousMinRsiElement and self.previousMinRsiElement in range(self.startRange, self.endRange) and (self.rsi[self.previousMinRsiElement]) < 10:
-            self.minRsiElement = self.previousMinRsiElement
-
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log("  Selected stock: %s (RSI %d)" % (
             self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
