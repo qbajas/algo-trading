@@ -73,22 +73,32 @@ class TestStrategy(bt.Strategy):
                 self.minRsiElement = i
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
-        self.log("  Selected stock: %s (RSI %d)" % (
-            self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        self.log("  Selected stock: %s (RSI %d, price %d)" % (
+            self.datas[self.minRsiElement].params.dataname.split("/")[-1],
+            self.rsi[self.minRsiElement][0],
+            self.datas[self.minRsiElement][0])
+                 )
 
         if not self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
+                if self.broker.getposition(datas[i]):
+                    self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
+                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
+                               valid=bt.datetime.timedelta(days=1))
 
-        if not self.broker.getposition(datas[self.minRsiElement]) and self.doBuy:
-            self.log(" selling ")
+        if self.doBuy:
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
+                if self.broker.getposition(datas[i]) and i != self.minRsiElement:
+                    self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
+                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
+                               valid=bt.datetime.timedelta(days=1))
 
-            self.log(" buying ")
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.02)
+            if not self.broker.getposition(datas[self.minRsiElement]):
+                self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
+                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.02,
+                         valid=bt.datetime.timedelta(days=1))
 
         self.previousMinRsiElement = self.minRsiElement
 
@@ -104,7 +114,7 @@ class TestStrategy(bt.Strategy):
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
             else:
-                self.positioncount = 0
+                self.positioncount -= 1
                 self.log(
                     ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
                                                                          order.executed.value,
@@ -172,6 +182,7 @@ if __name__ == '__main__':
         data.start()
 
         # Add the Data Feed to Cerebro
+        data.plotinfo.plot = False
         cerebro.adddata(data)
 
         datas.append(data)
@@ -187,7 +198,6 @@ if __name__ == '__main__':
     # Run over everything
     run = cerebro.run()
 
-    # cerebro.plot()
     locale.setlocale(locale.LC_ALL, 'en_US')
 
     # Print out the final result
@@ -201,3 +211,7 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
     pp.pprint(run[0].analyzers[4].get_analysis())
+
+    # get rid of warnings from locator.py
+    # https://stackoverflow.com/questions/63471764/importerror-cannot-import-name-warnings-from-matplotlib-dates
+    cerebro.plot()
