@@ -28,7 +28,7 @@ class TestStrategy(bt.Strategy):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
         self.sma = []
         for i in range(len(self.datas)):
-            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
+            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=14))
 
         self.buyStock = True
         self.minRsiElement = 0
@@ -106,18 +106,24 @@ if __name__ == '__main__':
 
     tickers = [
 
-        "SPY",
-        "IWM",
-        "QQQ",
-        "EFA",
-        "EEM",
-        "VNQ",
-        "LQD",
-        "GLD",
+
         "SHY",
         "IEF",
         "TLT",
         "AGG",
+        "LQD",
+
+        "SPY",
+        "SPMO",
+
+        "EFA",
+        "IMTM",
+
+        "QQQ",
+        "EEM",
+        "IWM",
+        "VNQ",
+        "GLD",
     ]
 
     datas = []
@@ -127,7 +133,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=bt.datetime.datetime(2004, 8, 1)
+            fromdate=bt.datetime.datetime(2015, 11, 1)
             # todate=bt.datetime.datetime(2022, 5, 6)
         )
 

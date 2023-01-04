@@ -50,10 +50,10 @@ class TestStrategy(bt.Strategy):
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" selling ")
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0]*0.98)
+                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0]*0.98, valid =bt.datetime.timedelta(days=1))
 
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.02)
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.02, valid =bt.datetime.timedelta(days=1))
 
 
     def notify_order(self, order):
@@ -135,6 +135,7 @@ if __name__ == '__main__':
 
         data.start()
 
+        data.plotinfo.plot = False
         # Add the Data Feed to Cerebro
         cerebro.adddata(data)
 
@@ -165,3 +166,5 @@ if __name__ == '__main__':
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
     pp.pprint(run[0].analyzers[4].get_analysis())
+
+    cerebro.plot()

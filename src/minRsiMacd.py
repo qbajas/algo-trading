@@ -57,6 +57,7 @@ class TestStrategy(bt.Strategy):
         for i in range(0, len(self.datas)):
             if self.rsi[i] > 70 and self.macd[i].macd < self.macd[i].signal:
                 self.close(data=self.datas[i])
+                # add short
 
         for i in range(0, len(self.datas)):
             if self.rsi[i] < 30 and self.macd[i].macd > self.macd[i].signal and not self.broker.getposition(datas[i]):
