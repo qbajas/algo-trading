@@ -52,7 +52,7 @@ class TestStrategy(bt.Strategy):
         # buy stocks if any stock rsi below 10
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
-            if self.rsi[i] < 10:
+            if self.rsi[i] < 15:
                 self.buyStocksOnly = True
 
         if self.buyBondsOnly:
@@ -97,7 +97,7 @@ class TestStrategy(bt.Strategy):
             if not self.broker.getposition(datas[self.minRsiElement]):
                 self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
                 self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.02,
+                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
                          valid=bt.datetime.timedelta(days=1))
 
         self.previousMinRsiElement = self.minRsiElement

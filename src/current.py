@@ -37,10 +37,10 @@ class TestStrategy(bt.Strategy):
             if self.rsi[i] < 90:
                 self.doBuy = True
 
-        # buy stocks if any stock rsi below 10
+        # buy stocks if any stock rsi below 15
         self.buyStocksOnly = False
         for i in range(5, len(self.datas)):
-            if self.rsi[i] < 10:
+            if self.rsi[i] < 15:
                 self.buyStocksOnly = True
 
         if self.buyStocksOnly:
@@ -64,8 +64,8 @@ class TestStrategy(bt.Strategy):
         self.log("")
         for i in range(len(self.datas)):
             self.log(self.get_ticker_name(self.datas[i]).ljust(4) +
-                     " rsi: " + str(round(self.rsi[i][0], 4)).ljust(7) +
-                     " (price: " + str(self.datas[i][0]) + ")")
+                     " rsi: " + format(self.rsi[i][0], ".2f").ljust(5) +
+                     " (price: " + format(self.datas[i][0], ".2f") + ")")
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
@@ -80,12 +80,12 @@ class TestStrategy(bt.Strategy):
         if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
             self.log("+ BUY %s limit %s " %
                      (self.get_ticker_name(self.datas[self.minRsiElement]),
-                      self.datas[self.minRsiElement][0] * 1.02))
+                      format(self.datas[self.minRsiElement][0] * 1.017, ".2f")))
 
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
             self.log("- SELL %s limit %s" %
                      (self.get_ticker_name(self.datas[self.previousMinRsiElement]),
-                      self.datas[self.previousMinRsiElement][0] * 0.98))
+                      format(self.datas[self.previousMinRsiElement][0] * 0.98, ".2f")))
 
     def get_ticker_name(self, data):
         return data.params.dataname.split("/")[-1].split(".")[0]
