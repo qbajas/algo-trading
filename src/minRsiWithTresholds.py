@@ -24,8 +24,10 @@ class TestStrategy(bt.Strategy):
 
         self.positioncount = 0
         self.rsi = []
+        self.rsi3 = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
+            self.rsi3.append(bt.indicators.RSI_Safe(self.datas[i].close, period=3))
 
         self.buyStocksOnly = False
         self.buyBondsOnly = False
@@ -69,7 +71,7 @@ class TestStrategy(bt.Strategy):
 
         self.minRsiElement = self.startRange
         for i in range(self.startRange, self.endRange):
-            if self.rsi[i] <= self.rsi[self.minRsiElement]:
+            if 10 * self.rsi[i] + self.rsi3[i] <= 10 * self.rsi[self.minRsiElement] + self.rsi3[self.minRsiElement]:
                 self.minRsiElement = i
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
