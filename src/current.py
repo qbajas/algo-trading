@@ -22,7 +22,10 @@ class TestStrategy(bt.Strategy):
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
-            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
+            self.rsi.append(
+                (10 * bt.indicators.RSI_Safe(self.datas[i].close, period=2) +
+                 bt.indicators.RSI_Safe(self.datas[i].close, period=3)) / 11
+            )
 
         self.minRsiElement = 0
 
