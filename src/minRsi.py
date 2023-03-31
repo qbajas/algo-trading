@@ -45,16 +45,20 @@ class TestStrategy(bt.Strategy):
 
         self.minRsiElement = self.rsi.index(min(self.rsi))
 
-        self.log("  Selected stock: %s (RSI %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+        self.log("  Selected stock: %s (RSI %d)" % (
+            self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+
+        for i in range(len(self.datas)):
+            if self.broker.getposition(datas[i]) and i != self.minRsiElement:
+                self.log(" selling ")
+                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
+                           valid=bt.datetime.timedelta(days=1))
 
         if not self.broker.getposition(datas[self.minRsiElement]):
-            self.log(" selling ")
-            for i in range(len(self.datas)):
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0]*0.98, valid =bt.datetime.timedelta(days=1))
-
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]), exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0]*1.02, valid =bt.datetime.timedelta(days=1))
-
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
+                     valid=bt.datetime.timedelta(days=1))
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -144,7 +148,7 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
-    cerebro.broker.setcommission(leverage=100, commission=0.000005)  # 0.0005% of the operation value
+    cerebro.broker.setcommission(leverage=100, commission=0.000035)  # 0.0035% of the operation value
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())

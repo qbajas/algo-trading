@@ -193,7 +193,7 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
-    cerebro.broker.setcommission(leverage=cashstart, commission=0.000005)  # 0.0005% of the operation value
+    cerebro.broker.setcommission(leverage=cashstart, commission=0.000035)  # 0.0035% of the operation value
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
