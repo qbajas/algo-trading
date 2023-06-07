@@ -14,7 +14,10 @@ class TestStrategy(bt.Strategy):
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
         dt = dt or self.datas[0].datetime.date(0)
-        print('%s, %s' % (dt.isoformat(), txt))
+
+        # print only last days
+        if self.datas[0].datetime.date(0) >= datetime.date.today() - datetime.timedelta(days=7):
+            print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
         self.setsizer(bt.sizers.AllInSizer())
@@ -60,10 +63,6 @@ class TestStrategy(bt.Strategy):
 
         # --- END effective strategy ---
 
-        # print only last days
-        if self.datas[0].datetime.date(0) < datetime.date.today() - datetime.timedelta(days=7):
-            return
-
         self.log("")
         for i in range(len(self.datas)):
             self.log(self.get_ticker_name(self.datas[i]).ljust(4) +
@@ -81,14 +80,29 @@ class TestStrategy(bt.Strategy):
             self.log("---------------")
 
         if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
-            self.log("+ BUY %s limit %s " %
-                     (self.get_ticker_name(self.datas[self.minRsiElement]),
-                      format(self.datas[self.minRsiElement][0] * 1.017, ".2f")))
+            sizing = self.getsizing(self.datas[self.minRsiElement])
+            price = self.datas[self.minRsiElement][0] * 1.017
+            self.log("Portfolio value: $%d" % self.broker.getvalue())
+            self.log("+ BUY %d %s @ %s LIMIT ($%d)" %
+                     (
+                         sizing,
+                         self.get_ticker_name(self.datas[self.minRsiElement]),
+                         format(price, ".2f"),
+                         sizing*price
+                     ))
+            self.buy(data=self.datas[self.minRsiElement],
+                     size=sizing,
+                     exectype=bt.Order.Limit,
+                     price=price,
+                     valid=bt.datetime.timedelta(days=4))
 
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
-            self.log("- SELL %s limit %s" %
+            self.log("- CLOSE %s %s LIMIT" %
                      (self.get_ticker_name(self.datas[self.previousMinRsiElement]),
                       format(self.datas[self.previousMinRsiElement][0] * 0.98, ".2f")))
+            self.close(data=self.datas[self.previousMinRsiElement],
+                       exectype=bt.Order.Limit, price=self.datas[self.previousMinRsiElement][0] * 0.98,
+                       valid=bt.datetime.timedelta(days=4))
 
     def get_ticker_name(self, data):
         return data.params.dataname.split("/")[-1].split(".")[0]
@@ -143,8 +157,9 @@ if __name__ == '__main__':
         datas.append(data)
 
     # Set our desired cash start
-    cashstart = 100000.0
+    cashstart = 110000.0
     cerebro.broker.setcash(cashstart)
+    cerebro.broker.setcommission(leverage=cashstart, commission=0.000035)  # 0.0035% of the operation value
 
     # Run over everything
     run = cerebro.run()

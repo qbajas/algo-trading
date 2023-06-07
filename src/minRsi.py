@@ -35,6 +35,7 @@ class TestStrategy(bt.Strategy):
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
+            # self.rsi.append(bt.indicators.WilliamsR(self.datas[i], period=6))
 
         self.minRsiElement = 0
 
@@ -111,11 +112,11 @@ if __name__ == '__main__':
         "LQD",
 
         "SPY",
-        "SPMO",
-
+        # "SPMO",
+        #
         "EFA",
-        "IMTM",
-
+        # "IMTM",
+        #
         "QQQ",
         "EEM",
         "IWM",
