@@ -81,19 +81,19 @@ class TestStrategy(bt.Strategy):
 
         if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
             sizing = self.getsizing(self.datas[self.minRsiElement])
-            price = self.datas[self.minRsiElement][0] * 1.017
-            self.log("Portfolio value: $%d" % self.broker.getvalue())
+            price = self.datas[self.minRsiElement][0]
+            limitPrice = price * 1.017
             self.log("+ BUY %d %s @ %s LIMIT ($%d)" %
                      (
                          sizing,
                          self.get_ticker_name(self.datas[self.minRsiElement]),
-                         format(price, ".2f"),
-                         sizing*price
+                         format(limitPrice, ".2f"),
+                         sizing * price
                      ))
             self.buy(data=self.datas[self.minRsiElement],
                      size=sizing,
                      exectype=bt.Order.Limit,
-                     price=price,
+                     price=limitPrice,
                      valid=bt.datetime.timedelta(days=4))
 
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
