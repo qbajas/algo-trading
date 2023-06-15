@@ -53,13 +53,13 @@ class TestStrategy(bt.Strategy):
             if self.broker.getposition(datas[i]) and i != self.minRsiElement:
                 self.log(" selling ")
                 self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
-                           valid=bt.datetime.timedelta(days=1))
+                           valid=bt.datetime.timedelta(days=4))
 
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
             self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
                      exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
-                     valid=bt.datetime.timedelta(days=1))
+                     valid=bt.datetime.timedelta(days=4))
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -80,8 +80,8 @@ class TestStrategy(bt.Strategy):
                                                                          order.executed.comm)
                 )
             self.bar_executed = len(self)
-        elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected')
+        elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
+            self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
         self.order = None
 
     def notify_trade(self, trade):
