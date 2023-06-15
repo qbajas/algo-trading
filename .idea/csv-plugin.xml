@@ -185,6 +185,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\BIL.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\BILL.csv">
           <value>
             <Attribute>
@@ -584,6 +591,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\EWZ.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\EXC.csv">
           <value>
             <Attribute>
@@ -780,7 +794,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\IVE.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\IWMO.L.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\IWRD.L.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -1172,6 +1200,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\PLN.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\PLN=X.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\PLTR.csv">
           <value>
             <Attribute>
@@ -1225,6 +1267,13 @@
           <value>
             <Attribute>
               <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\QQQ.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
             </Attribute>
           </value>
         </entry>
@@ -1536,6 +1585,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\tickers\USDPLN.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\tickers\V.csv">
           <value>
             <Attribute>
@@ -1551,6 +1607,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\VIAC.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\VNQ.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

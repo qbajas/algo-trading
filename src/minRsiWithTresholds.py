@@ -124,10 +124,8 @@ class TestStrategy(bt.Strategy):
                                                                          order.executed.comm)
                 )
             self.bar_executed = len(self)
-        elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected %s' % order.status)
-        else:
-            self.log("unknown order status %d" % order.status)
+        elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
+            self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
         self.order = None
 
     def notify_trade(self, trade):
