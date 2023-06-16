@@ -11,13 +11,13 @@ import backtrader as bt
 
 import pprint
 
-
 # Create a Stratey
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, AnnualReturn, Returns
+from backtrader.analyzers import PeriodStats, AnnualReturn, Returns, SharpeRatio, TimeDrawDown
 
 day = 0
 
-
+# source:
+# https://systemtrader.pl/prosta-dlugoterminowa-strategia-dla-rynku-akcji-i-obligacji/#logika-strategii
 class TestStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
@@ -26,41 +26,31 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
-
-        self.buyStock = True
-        self.buyBonds = False
-
-        self.rsi = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
 
     def next(self):
         global day
         day += 1
 
-        self.log("RSI %d, cash %d" % (self.rsi[0], self.sizer.broker.getcash()))
+        if day > 250 and day % 20 == 0:
+            self.log("cash %d" % (self.sizer.broker.getcash()))
 
-        if self.buyStock:
-            self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.95)
-            self.buyStock = False
+            if self.datas[0][0] / self.datas[0][-250] < self.datas[3][0] / self.datas[3][-250]:
+                if not self.broker.getposition(self.datas[2]):
+                    self.close(data=self.datas[0])
+                    self.close(data=self.datas[1])
+                    self.buy(data=self.datas[2], size=self.getsizing(self.datas[2]) * 0.95)
 
-        if self.buyBonds:
-            self.buy(data=self.datas[1], size=self.getsizing(self.datas[1]) * 0.95)
-            self.buyBonds = False
-
-        if self.rsi > 70 and self.broker.getposition(datas[0]):
-            self.close(data=self.datas[0])
-            self.buyBonds = True
-
-        if self.rsi < 60 and not self.broker.getposition(datas[0]):
-            self.close(data=self.datas[1])
-            self.buyStock = True
-
-        #
-        # self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.95)
+            elif self.datas[0][0] / self.datas[0][-250] > self.datas[1][0] / self.datas[1][-250]:
+                if not self.broker.getposition(self.datas[0]):
+                    self.close(data=self.datas[1])
+                    self.close(data=self.datas[2])
+                    self.buy(data=self.datas[0], size=self.getsizing(self.datas[0]) * 0.95)
+            else:
+                if not self.broker.getposition(self.datas[1]):
+                    self.close(data=self.datas[0])
+                    self.close(data=self.datas[2])
+                    self.buy(data=self.datas[1], size=self.getsizing(self.datas[1]) * 0.95)
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -72,6 +62,7 @@ class TestStrategy(bt.Strategy):
                 )
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
+                self.buyStock = False
             else:
                 self.log(
                     ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
@@ -104,8 +95,10 @@ if __name__ == '__main__':
     cerebro.addanalyzer(Returns)
 
     tickers = [
-        "IWMO.L",
-        "MVOL.L"
+        "SPY",
+        "ACWX",
+        "AGG",
+        "BIL",
     ]
 
     datas = []
@@ -113,9 +106,9 @@ if __name__ == '__main__':
     for ticker in tickers:
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
-            dataname="../resources/tickers/" + ticker + ".csv",
-            # Do not pass values before this date
-            fromdate=datetime.datetime(1970, 1, 1),
+            dataname="../../resources/tickers/" + ticker + ".csv",
+            fromdate=bt.datetime.datetime(2010, 11, 1)
+            # todate=datetime.datetime(2017, 7, 20)
         )
 
         data.start()
@@ -128,8 +121,10 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
+    cerebro.broker.setcommission(leverage=100, commission=0.000035)  # 0.0035% of the operation value
 
-    # Print out the starting conditions
+
+# Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     # Run over everything
@@ -142,10 +137,13 @@ if __name__ == '__main__':
     # Print out the final result
     print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))
     print(locale.format_string("Annualized return: %f percent",
-                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
+                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / ((day-250) / 252))) - 1),
                                grouping=True))
 
     pp = pprint.PrettyPrinter(width=41, compact=True)
     pp.pprint(run[0].analyzers[0].get_analysis())
     pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())
+
+    cerebro.plot()

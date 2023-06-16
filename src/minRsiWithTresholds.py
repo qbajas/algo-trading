@@ -93,11 +93,13 @@ class TestStrategy(bt.Strategy):
         if self.doBuy:
             for i in range(len(self.datas)):
                 if self.broker.getposition(datas[i]) and i != self.minRsiElement:
+                    # cancel all submitted orders
                     self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
                     self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
                                valid=bt.datetime.timedelta(days=4))
 
             if not self.broker.getposition(datas[self.minRsiElement]):
+                # cancel all submitted orders
                 self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
                 self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
                          exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
@@ -124,6 +126,7 @@ class TestStrategy(bt.Strategy):
                                                                          order.executed.comm)
                 )
             self.bar_executed = len(self)
+        #     if order submitted then save it to array
         elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
             self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
         self.order = None

@@ -7,16 +7,15 @@ import sys  # To find out the script name (in argv[0])
 
 # Import the backtrader platform
 import backtrader as bt
-import locale
 
 import pprint
 
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
+# Create a Stratey
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, AnnualReturn, Returns
 
 day = 0
 
 
-# Create a Stratey
 class TestStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
@@ -25,59 +24,44 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=14))
+
         self.sma = []
         for i in range(len(self.datas)):
-            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
-
-        self.buyStock = False
-        self.minRsiElement = 0
-        self.trendFound = False
+            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=126))
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
+
         global day
         day += 1
 
-        self.trendFound = False
-        for i in range(len(self.datas)):
-            if self.rsi[i] < self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
-                self.minRsiElement = i
-                self.trendFound = True
-
-        for i in range(len(self.datas)):
-            if self.sma[i] <= self.datas[i].close:
-                self.trendFound = True
-
-        if not self.trendFound and max(self.rsi) > 70:
-            self.minRsiElement = self.rsi.index(max(self.rsi))
-
-        if self.buyStock:
-            if not self.trendFound and max(self.rsi) > 70:
-                self.sell(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
-            else:
-                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
-            self.buyStock = False
-            return
-        # if day % 2 != 0:
-        #     return
-
-        if not self.broker.getposition(datas[self.minRsiElement]):
+        if (day % 5 == 0):
+            self.maxRsi = 0
             for i in range(len(self.datas)):
-                self.close(data=self.datas[i])
-            self.buyStock = True
+                if self.rsi[i] > 80:
+                    self.maxRsi += 1
+            self.log("maxRsi: %d" % (self.maxRsi))
 
-        # for i in range(len(self.datas)):
-        #     self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.95 / len(self.datas))
+            for i in range(len(self.datas)):
+                if self.rsi[i] > 80:
+                    self.close(data=self.datas[i])
+
+        if (day % 5 == 1):
+            self.minRsi = 0
+            for i in range(len(self.datas)):
+                if self.rsi[i] < 40 and self.sma[i] <= self.datas[i].close:
+                    self.minRsi += 1
+            self.log("minRsi: %d" % (self.minRsi))
+
+            for i in range(len(self.datas)):
+                if self.rsi[i] < 40 and self.sma[i] <= self.datas[i].close:
+                    self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.9 / self.minRsi)
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -124,7 +108,6 @@ if __name__ == '__main__':
 
 
     tickers = [
-
         "SPY",
         "MDY",
         "EWJ",
@@ -135,63 +118,15 @@ if __name__ == '__main__':
         "EWA",
         "EWH",
         "EWQ",
-
-        "XLU",
-        "XLE",
-        "XLV",
-        "XLB",
-        "XLF",
-        "XLI",
-        "XLK",
-        "XLP",
-        "XLY",
-
-        # "EWW",
-        # "EWI",
-        # "EWD",
-        # "EWP",
-        # "EWS",
-        # "EWN",
-        # "EWM",
-        # "EWO",
-        # "EWK",
-        #
-        # "DIA",
-        # "VTI",
-
-
-        # "IWMO.L",
-        # "MVOL.L",
-
-        # "SHY",
-        # "VT",
-        # "IWVL.L",
-        # "VTV"
-        # "BLOK",
-        # "QQQ",
-        # "XLF",
-        # "IWM"
-        # "TSLA",
-        # "ATVI",
-        # "AAPL",
-        # "MSFT",
-        # "NVDA",
-        # "AMZN",
-        # "FB",
-        # "GS",
-        # "AMD",
-        # "GOOGL",
-        # "BABA",
-        # "JPM",
-        # "F",
-        # "GOOG",
-        # "TSM",
-        # "XOM",
-        # "BA",
-        # "HD",
-        # "BAC",
-        # "PYPL",
-        # "WFC"
+        "EWW",
+        "EWI",
+        "EWD",
+        "EWP",
+        "EWS",
+        "EWN",
+        "EWM",
+        "EWO",
+        "EWK"
     ]
 
     datas = []
@@ -199,11 +134,11 @@ if __name__ == '__main__':
     for ticker in tickers:
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
-            dataname="../resources/tickers/" + ticker + ".csv",
+            dataname="../../resources/tickers/" + ticker + ".csv")
         # Do not pass values before this date
-        fromdate=datetime.datetime(1970, 1, 1))
+        # fromdate=datetime.datetime(2018, 1, 1),
         # Do not pass values before this date
-        # todate=datetime.datetime(2015, 12, 31))
+        # todate=datetime.datetime(2020, 12, 31))
 
         data.start()
 
@@ -213,8 +148,7 @@ if __name__ == '__main__':
         datas.append(data)
 
     # Set our desired cash start
-    cashstart = 100000.0
-    cerebro.broker.setcash(cashstart)
+    cerebro.broker.setcash(100000.0)
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
@@ -223,13 +157,13 @@ if __name__ == '__main__':
     run = cerebro.run()
 
     # cerebro.plot()
-    locale.setlocale(locale.LC_ALL, 'en_US')
 
     # Print out the final result
-    print(locale.format_string("Final Portfolio Value: %d", cerebro.broker.getvalue(), grouping=True))
-    print(locale.format_string("Annualized return: %f percent",
-                               100 * (((cerebro.broker.getvalue() / cashstart) ** (1 / (day / 252))) - 1),
-                               grouping=True))
+    print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     pp = pprint.PrettyPrinter(width=41, compact=True)
+    pp.pprint(run[0].analyzers[0].get_analysis())
+    pp.pprint(run[0].analyzers[1].get_analysis())
+    pp.pprint(run[0].analyzers[2].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
+    pp.pprint(run[0].analyzers[4].get_analysis())

@@ -1,12 +1,17 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import locale
-import pprint
+import datetime  # For datetime objects
+import os.path  # To manage paths
+import sys  # To find out the script name (in argv[0])
 
 # Import the backtrader platform
 import backtrader as bt
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
+import locale
+
+import pprint
+
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
 
 day = 0
 
@@ -20,45 +25,59 @@ class TestStrategy(bt.Strategy):
         print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
+        # Keep a reference to the "close" line in the data[0] dataseries
+        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
+        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
+        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
         self.rsi = []
         for i in range(len(self.datas)):
-            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
+            self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=14))
         self.sma = []
         for i in range(len(self.datas)):
-            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=14))
+            self.sma.append(bt.indicators.SMA(self.datas[i].close, period=200))
 
-        self.buyStock = True
+        self.buyStock = False
         self.minRsiElement = 0
-        self.foundWithinTrend = False
+        self.trendFound = False
 
     def next(self):
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
 
-        self.foundWithinTrend = False
-        for i in range(0,len(self.datas)):
-            if self.rsi[i] <= self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
+        self.trendFound = False
+        for i in range(len(self.datas)):
+            if self.rsi[i] < self.rsi[self.minRsiElement] and self.sma[i] <= self.datas[i].close:
                 self.minRsiElement = i
-                self.foundWithinTrend = True
+                self.trendFound = True
 
-        if not self.foundWithinTrend:
-            self.log("trend not found")
-            self.minRsiElement = self.rsi.index(min(self.rsi))
+        for i in range(len(self.datas)):
+            if self.sma[i] <= self.datas[i].close:
+                self.trendFound = True
 
-        self.log("  Selected stock: %s (RSI %d, SMA %d)" % (self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0], self.sma[self.minRsiElement][0]))
+        if not self.trendFound and max(self.rsi) > 70:
+            self.minRsiElement = self.rsi.index(max(self.rsi))
+
+        if self.buyStock:
+            if not self.trendFound and max(self.rsi) > 70:
+                self.sell(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
+            else:
+                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]) * 0.95)
+            self.buyStock = False
+            return
+        # if day % 2 != 0:
+        #     return
 
         if not self.broker.getposition(datas[self.minRsiElement]):
-            self.log(" selling ")
             for i in range(len(self.datas)):
                 self.close(data=self.datas[i])
+            self.buyStock = True
 
-            self.log(" buying ")
-            self.buy(data=self.datas[self.minRsiElement],  size=self.getsizing(self.datas[self.minRsiElement]))
-
+        # for i in range(len(self.datas)):
+        #     self.buy(data=self.datas[i], size=self.getsizing(self.datas[i]) * 0.95 / len(self.datas))
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -72,7 +91,7 @@ class TestStrategy(bt.Strategy):
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
             else:
-                self.positioncount = 0
+                self.positioncount -= 1
                 self.log(
                     ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
                                                                          order.executed.value,
@@ -80,7 +99,7 @@ class TestStrategy(bt.Strategy):
                 )
             self.bar_executed = len(self)
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:
-            self.log('WARNING: Order Canceled/Margin/Rejected %s' % order.status)
+            self.log('WARNING: Order Canceled/Margin/Rejected')
         self.order = None
 
     def notify_trade(self, trade):
@@ -92,7 +111,6 @@ class TestStrategy(bt.Strategy):
 
 if __name__ == '__main__':
     # Create a cerebro entity
-    # cerebro = bt.Cerebro(cheat_on_open=True)
     cerebro = bt.Cerebro()
 
     # Add a strategy
@@ -104,26 +122,76 @@ if __name__ == '__main__':
     cerebro.addanalyzer(AnnualReturn)
     cerebro.addanalyzer(Returns)
 
+
     tickers = [
 
-
-        "SHY",
-        "IEF",
-        "TLT",
-        "AGG",
-        "LQD",
-
         "SPY",
-        "SPMO",
+        "MDY",
+        "EWJ",
+        "EWC",
+        "EWU",
+        "EWG",
+        "EWL",
+        "EWA",
+        "EWH",
+        "EWQ",
 
-        "EFA",
-        "IMTM",
+        "XLU",
+        "XLE",
+        "XLV",
+        "XLB",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLY",
 
-        "QQQ",
-        "EEM",
-        "IWM",
-        "VNQ",
-        "GLD",
+        # "EWW",
+        # "EWI",
+        # "EWD",
+        # "EWP",
+        # "EWS",
+        # "EWN",
+        # "EWM",
+        # "EWO",
+        # "EWK",
+        #
+        # "DIA",
+        # "VTI",
+
+
+        # "IWMO.L",
+        # "MVOL.L",
+
+        # "SHY",
+        # "VT",
+        # "IWVL.L",
+        # "VTV"
+        # "BLOK",
+        # "QQQ",
+        # "XLF",
+        # "IWM"
+        # "TSLA",
+        # "ATVI",
+        # "AAPL",
+        # "MSFT",
+        # "NVDA",
+        # "AMZN",
+        # "FB",
+        # "GS",
+        # "AMD",
+        # "GOOGL",
+        # "BABA",
+        # "JPM",
+        # "F",
+        # "GOOG",
+        # "TSM",
+        # "XOM",
+        # "BA",
+        # "HD",
+        # "BAC",
+        # "PYPL",
+        # "WFC"
     ]
 
     datas = []
@@ -131,11 +199,11 @@ if __name__ == '__main__':
     for ticker in tickers:
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
-            dataname="../resources/tickers/" + ticker + ".csv",
-            # Do not pass values before this date
-            fromdate=bt.datetime.datetime(2015, 11, 1)
-            # todate=bt.datetime.datetime(2022, 5, 6)
-        )
+            dataname="../../resources/tickers/" + ticker + ".csv",
+        # Do not pass values before this date
+        fromdate=datetime.datetime(1970, 1, 1))
+        # Do not pass values before this date
+        # todate=datetime.datetime(2015, 12, 31))
 
         data.start()
 
@@ -147,7 +215,6 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
-    cerebro.broker.setcommission(leverage=100, commission=0.000005)  # 0.0005% of the operation value
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
@@ -165,15 +232,4 @@ if __name__ == '__main__':
                                grouping=True))
 
     pp = pprint.PrettyPrinter(width=41, compact=True)
-    pp.pprint(run[0].analyzers[0].get_analysis())
-    pp.pprint(run[0].analyzers[1].get_analysis())
     pp.pprint(run[0].analyzers[3].get_analysis())
-    pp.pprint(run[0].analyzers[4].get_analysis())
-
-# from 2000:
-# Final Portfolio Value: 12,383,554
-# Annualized return: 25.986152 percent
-# OrderedDict([('sharperatio',
-#               1.0259176065085087)])
-# OrderedDict([('maxdrawdown',
-#               42.5299386042463),
