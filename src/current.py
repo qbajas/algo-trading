@@ -1,8 +1,6 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import datetime  # For datetime objects
-
 # Import the backtrader platform
 import backtrader as bt
 import locale
@@ -82,27 +80,26 @@ class TestStrategy(bt.Strategy):
         if self.previousMinRsiElement != self.minRsiElement and self.doBuy:
             sizing = self.getsizing(self.datas[self.minRsiElement])
             price = self.datas[self.minRsiElement][0]
-            limitPrice = price * 1.017
-            self.log("+ BUY %d %s @ %s LIMIT ($%d)" %
-                     (
-                         sizing,
-                         self.get_ticker_name(self.datas[self.minRsiElement]),
-                         format(limitPrice, ".2f"),
-                         sizing * price
-                     ))
+            self.log("+ BUY %d %s @ %s LIMIT ($%d)" % (
+                sizing,
+                self.get_ticker_name(self.datas[self.minRsiElement]),
+                format(price * 1.017, ".2f"),
+                sizing * price))
+            # simulate buy at any price to avoid handling edge cases where the order was not executed:
             self.buy(data=self.datas[self.minRsiElement],
                      size=sizing,
                      exectype=bt.Order.Limit,
-                     price=limitPrice,
-                     valid=bt.datetime.timedelta(days=4))
+                     price=(price * 2))
 
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
-            self.log("- CLOSE %s %s LIMIT" %
-                     (self.get_ticker_name(self.datas[self.previousMinRsiElement]),
-                      format(self.datas[self.previousMinRsiElement][0] * 0.983, ".2f")))
+            price = self.datas[self.previousMinRsiElement][0]
+            self.log("- CLOSE %s %s LIMIT" % (
+                self.get_ticker_name(self.datas[self.previousMinRsiElement]),
+                format(price * 0.983, ".2f")))
+            # simulate sell at any price to avoid handling edge cases where the order was not executed:
             self.close(data=self.datas[self.previousMinRsiElement],
-                       exectype=bt.Order.Limit, price=self.datas[self.previousMinRsiElement][0] * 0.983,
-                       valid=bt.datetime.timedelta(days=4))
+                       exectype=bt.Order.Limit,
+                       price=price * 0.5)
 
     def get_ticker_name(self, data):
         return data.params.dataname.split("/")[-1].split(".")[0]
@@ -145,7 +142,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=datetime.date.today() - datetime.timedelta(days=100))
+            fromdate=bt.datetime.date.today() - bt.datetime.timedelta(days=100))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 

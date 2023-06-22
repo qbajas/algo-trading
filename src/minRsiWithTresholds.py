@@ -83,7 +83,7 @@ class TestStrategy(bt.Strategy):
             self.datas[self.minRsiElement][0])
                  )
 
-        self.cancel_orders()
+        self.cancel_open_orders()
 
         if not self.doBuy:
             self.log(" selling ")
@@ -111,7 +111,7 @@ class TestStrategy(bt.Strategy):
 
         self.previousMinRsiElement = self.minRsiElement
 
-    def cancel_orders(self):
+    def cancel_open_orders(self):
         for i in range(len(self.orders)):
             self.log(" cancelling an order " + self.get_ticker_name(self.orders[i].data))
             self.cancel(self.orders[i])
@@ -128,8 +128,8 @@ class TestStrategy(bt.Strategy):
                         self.get_ticker_name(order.data), order.executed.price, order.executed.value,
                         order.executed.comm)
                 )
-                self.buyprice = order.executed.price
-                self.buycom = order.executed.comm
+                # self.buyprice = order.executed.price
+                # self.buycom = order.executed.comm
             else:
                 self.positioncount -= 1
                 self.log(
