@@ -23,11 +23,12 @@ class TestStrategy(bt.Strategy):
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
+        self.orders = []
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(
                 (10 * bt.indicators.RSI_Safe(self.datas[i].close, period=2) +
-                bt.indicators.RSI_Safe(self.datas[i].close, period=3)) / 11
+                 bt.indicators.RSI_Safe(self.datas[i].close, period=3)) / 11
             )
 
         self.buyStocksOnly = False
@@ -76,60 +77,72 @@ class TestStrategy(bt.Strategy):
                 self.minRsiElement = i
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
-        self.log("  Selected stock: %s (RSI %d, price %d)" % (
+        self.log(" Selected stock: %s (RSI %d, price %d)" % (
             self.datas[self.minRsiElement].params.dataname.split("/")[-1],
             self.rsi[self.minRsiElement][0],
             self.datas[self.minRsiElement][0])
                  )
+
+        self.cancel_orders()
 
         if not self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
                 if self.broker.getposition(datas[i]):
                     self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
-                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
-                               valid=bt.datetime.timedelta(days=4))
+                    self.orders.append(
+                        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
+                    )
 
         if self.doBuy:
             for i in range(len(self.datas)):
                 if self.broker.getposition(datas[i]) and i != self.minRsiElement:
-                    # TODO cancel all submitted orders
                     self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
-                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
-                               valid=bt.datetime.timedelta(days=4))
+                    self.orders.append(
+                        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
+                    )
 
             if not self.broker.getposition(datas[self.minRsiElement]):
-                # TODO cancel all submitted orders
                 self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
-                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
-                         valid=bt.datetime.timedelta(days=4))
+                self.orders.append(
+                    self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                             exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
+                )
 
         self.previousMinRsiElement = self.minRsiElement
+
+    def cancel_orders(self):
+        for i in range(len(self.orders)):
+            self.log(" cancelling an order " + self.get_ticker_name(self.orders[i].data))
+            self.cancel(self.orders[i])
+
+    def get_ticker_name(self, data):
+        return data.params.dataname.split("/")[-1].split(".")[0]
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
             if order.isbuy():
                 self.positioncount += 1
                 self.log(
-                    ' BUY EXECUTED at {}, cost {}, com {}'.format(order.executed.price,
-                                                                  order.executed.value,
-                                                                  order.executed.comm)
+                    ' BUY {} EXECUTED at {}, cost {}, com {}'.format(
+                        self.get_ticker_name(order.data), order.executed.price, order.executed.value,
+                        order.executed.comm)
                 )
                 self.buyprice = order.executed.price
                 self.buycom = order.executed.comm
             else:
                 self.positioncount -= 1
                 self.log(
-                    ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
-                                                                         order.executed.value,
-                                                                         order.executed.comm)
+                    ' SELL {} EXECUTED at price {}, cost {}, com {}'.format(
+                        self.get_ticker_name(order.data), order.executed.price, order.executed.value,
+                        order.executed.comm)
                 )
-            self.bar_executed = len(self)
-        #  TODO   if order submitted then save it to array
-        elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
-            self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
-        self.order = None
+            self.orders.remove(order)
+            # self.bar_executed = len(self)
+        elif order.status in [order.Canceled, order.Expired, order.Margin, order.Rejected]:
+            self.log(' WARNING: Order %s Canceled/Expired/Margin/Rejected %s'
+                     % (self.get_ticker_name(order.data), order.status))
+            self.orders.remove(order)
 
     def notify_trade(self, trade):
         if not trade.isclosed:

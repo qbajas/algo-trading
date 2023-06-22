@@ -99,9 +99,9 @@ class TestStrategy(bt.Strategy):
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
             self.log("- CLOSE %s %s LIMIT" %
                      (self.get_ticker_name(self.datas[self.previousMinRsiElement]),
-                      format(self.datas[self.previousMinRsiElement][0] * 0.98, ".2f")))
+                      format(self.datas[self.previousMinRsiElement][0] * 0.983, ".2f")))
             self.close(data=self.datas[self.previousMinRsiElement],
-                       exectype=bt.Order.Limit, price=self.datas[self.previousMinRsiElement][0] * 0.98,
+                       exectype=bt.Order.Limit, price=self.datas[self.previousMinRsiElement][0] * 0.983,
                        valid=bt.datetime.timedelta(days=4))
 
     def get_ticker_name(self, data):
