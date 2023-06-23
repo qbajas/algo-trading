@@ -12,7 +12,7 @@ day = 0
 
 
 # Create a Stratey
-class TestStrategy(bt.Strategy):
+class MinRsiWithThresholdsStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
@@ -88,7 +88,7 @@ class TestStrategy(bt.Strategy):
         if not self.doBuy:
             self.log(" selling ")
             for i in range(len(self.datas)):
-                if self.broker.getposition(datas[i]):
+                if self.broker.getposition(self.datas[i]):
                     self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
                     self.orders.append(
                         self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
@@ -96,13 +96,13 @@ class TestStrategy(bt.Strategy):
 
         if self.doBuy:
             for i in range(len(self.datas)):
-                if self.broker.getposition(datas[i]) and i != self.minRsiElement:
+                if self.broker.getposition(self.datas[i]) and i != self.minRsiElement:
                     self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
                     self.orders.append(
                         self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
                     )
 
-            if not self.broker.getposition(datas[self.minRsiElement]):
+            if not self.broker.getposition(self.datas[self.minRsiElement]):
                 self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
                 self.orders.append(
                     self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     # Add a strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(MinRsiWithThresholdsStrategy)
 
     cerebro.addanalyzer(SharpeRatio)
     cerebro.addanalyzer(TimeDrawDown)
