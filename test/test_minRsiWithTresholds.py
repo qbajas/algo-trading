@@ -2,7 +2,6 @@ from unittest import TestCase
 
 import backtrader as bt
 from minRsiWithTresholds import MinRsiWithThresholdsStrategy
-# from current import CurrentStrategy
 
 
 class TestMinRsiWithThresholdsStrategy(TestCase):
