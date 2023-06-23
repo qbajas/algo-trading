@@ -7,13 +7,8 @@ from minRsiWithTresholds import MinRsiWithThresholdsStrategy
 class TestMinRsiWithThresholdsStrategy(TestCase):
 
     def setUp(self):
-        # Create a cerebro entity
-        self.cerebro = bt.Cerebro()
 
-        # Add a strategy
-        self.cerebro.addstrategy(MinRsiWithThresholdsStrategy)
-
-        tickers = [
+        self.tickers = [
 
             "SHY",
             "IEF",
@@ -35,33 +30,18 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
 
         ]
 
-        self.datas = []
 
-        for ticker in tickers:
-            # Create a Data Feed
-            data = bt.feeds.YahooFinanceCSVData(
-                dataname="../resources/tickers/" + ticker + ".csv",
-                fromdate=bt.datetime.datetime(2023, 6, 2),
-                todate=bt.datetime.datetime(2023, 6, 8)
-            )
-            self.cerebro.adddata(data)
-            self.datas.append(data)
-
-    def test_strategy(self):
+    def test_buy(self):
         # given
-        self.cerebro.broker.setcash(100000.0)
-        self.cerebro.broker.setcommission(leverage=100000.0, commission=0.000035)
+        self.load_data(fromdate=bt.datetime.datetime(2023, 6, 2), todate=bt.datetime.datetime(2023, 6, 8))
 
         # when
         self.cerebro.run()
 
         # then
         strategy = self.cerebro.runstrats[0][0]
-        # Assertion 1: On day one, the ticker with the lowest RSI score is selected
-        selected_ticker = strategy.datas[strategy.minRsiElement].params.dataname.split("/")[-1]
-        lowest_rsi_score = strategy.rsi[strategy.minRsiElement][0]
-        self.assertEqual(selected_ticker, "QQQ.csv")
-        self.assertAlmostEqual(lowest_rsi_score, 2.2, delta=0.1)
+        self.assert_min_rsi_element(strategy, ticker="QQQ.csv", rsi=2.2)
+
         # Assertion 2: The buy order is created with maximum available cash and buys the selected ticker
         buy_orders = [order for order in strategy.orders if order.isbuy()]
         self.assertEqual(len(buy_orders), 1)  # Ensure only one buy order is created
@@ -71,6 +51,49 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         cash = strategy.sizer.broker.getcash()
         price = strategy.datas[strategy.minRsiElement][0]
         self.assertEqual(buy_order.size, cash / price)
+
+    def test_sell(self):
+        # given
+        self.load_data(fromdate=bt.datetime.datetime(2023, 6, 2), todate=bt.datetime.datetime(2023, 6, 9))
+
+        # when
+        self.cerebro.run()
+
+        # then
+        strategy = self.cerebro.runstrats[0][0]
+        self.assert_min_rsi_element(strategy, ticker="LQD.csv", rsi=58)
+
+        # Assertion 2: The sell order is created with maximum available cash and sells the selected ticker
+        sell_orders = [order for order in strategy.orders if order.issell()]
+        self.assertEqual(len(sell_orders), 1)  # Ensure only one sell order is created
+        sell_order = sell_orders[0]
+        self.assertEqual(sell_order.data.params.dataname.split("/")[-1], "QQQ.csv")
+        self.assertAlmostEqual(sell_order.price, 346.6, delta=0.1)
+        cash = strategy.sizer.broker.getcash()
+        self.assertAlmostEqual(sell_order.size, - cash / strategy.orders[0].price, delta=2)
+
+    def assert_min_rsi_element(self, strategy, ticker, rsi):
+        # the ticker with the lowest RSI score is selected
+        selected_ticker = strategy.datas[strategy.minRsiElement].params.dataname.split("/")[-1]
+        lowest_rsi_score = strategy.rsi[strategy.minRsiElement][0]
+        self.assertEqual(selected_ticker, ticker)
+        self.assertAlmostEqual(lowest_rsi_score, rsi, delta=0.1)
+
+    def load_data(self, fromdate, todate):
+        self.cerebro = bt.Cerebro()
+        self.cerebro.addstrategy(MinRsiWithThresholdsStrategy)
+        self.datas = []
+        for ticker in self.tickers:
+            # Create a Data Feed
+            data = bt.feeds.YahooFinanceCSVData(
+                dataname="../resources/tickers/" + ticker + ".csv",
+                fromdate=fromdate,
+                todate=todate
+            )
+            self.cerebro.adddata(data)
+            self.datas.append(data)
+        self.cerebro.broker.setcash(100000.0)
+        self.cerebro.broker.setcommission(leverage=100000.0, commission=0.000035)
 
 if __name__ == '__main__':
     unittest.main()
