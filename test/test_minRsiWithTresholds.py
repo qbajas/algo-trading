@@ -7,6 +7,10 @@ from minRsiWithTresholds import MinRsiWithThresholdsStrategy
 class TestMinRsiWithThresholdsStrategy(TestCase):
 
     def setUp(self):
+        self.cerebro = bt.Cerebro()
+        self.cerebro.addstrategy(MinRsiWithThresholdsStrategy)
+        self.cerebro.broker.setcash(100000.0)
+        self.cerebro.broker.setcommission(leverage=100000.0, commission=0.000035)
 
         self.tickers = [
 
@@ -72,6 +76,16 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         cash = strategy.sizer.broker.getcash()
         self.assertAlmostEqual(sell_order.size, - cash / strategy.orders[0].price, delta=2)
 
+    def test_value(self):
+        # given
+        self.load_data(fromdate=bt.datetime.datetime(2022, 1, 1), todate=bt.datetime.datetime(2023, 1, 1))
+
+        # when
+        self.cerebro.run()
+
+        # then
+        self.assertAlmostEqual(103715.6, self.cerebro.broker.getvalue(), delta=0.1)
+
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected
         selected_ticker = strategy.datas[strategy.minRsiElement].params.dataname.split("/")[-1]
@@ -80,8 +94,6 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.assertAlmostEqual(lowest_rsi_score, rsi, delta=0.1)
 
     def load_data(self, fromdate, todate):
-        self.cerebro = bt.Cerebro()
-        self.cerebro.addstrategy(MinRsiWithThresholdsStrategy)
         self.datas = []
         for ticker in self.tickers:
             # Create a Data Feed
@@ -92,8 +104,6 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
             )
             self.cerebro.adddata(data)
             self.datas.append(data)
-        self.cerebro.broker.setcash(100000.0)
-        self.cerebro.broker.setcommission(leverage=100000.0, commission=0.000035)
 
 if __name__ == '__main__':
     unittest.main()
