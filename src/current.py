@@ -9,7 +9,7 @@ import locale
 
 
 # Create a Stratey
-class TestStrategy(bt.Strategy):
+class CurrentStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     # Add a strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(CurrentStrategy)
 
     tickers = [
 

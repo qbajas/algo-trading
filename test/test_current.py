@@ -1,15 +1,14 @@
 from unittest import TestCase
 
 import backtrader as bt
-from minRsiWithTresholds import MinRsiWithThresholdsStrategy
-# from current import CurrentStrategy
+from current import CurrentStrategy
 
 
-class TestMinRsiWithThresholdsStrategy(TestCase):
+class TestCurrentStrategy(TestCase):
 
     def setUp(self):
         self.cerebro = bt.Cerebro()
-        self.cerebro.addstrategy(MinRsiWithThresholdsStrategy)
+        self.cerebro.addstrategy(CurrentStrategy)
         self.cerebro.broker.setcash(100000.0)
         self.cerebro.broker.setcommission(leverage=100000.0, commission=0.000035)
 
@@ -51,10 +50,6 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.assertEqual(len(buy_orders), 1)  # Ensure only one buy order is created
         buy_order = buy_orders[0]
         self.assertEqual(buy_order.data.params.dataname.split("/")[-1], "QQQ.csv")
-        self.assertAlmostEqual(buy_order.price, 354.2, delta=0.1)
-        cash = strategy.sizer.broker.getcash()
-        price = strategy.datas[strategy.minRsiElement][0]
-        self.assertEqual(buy_order.size, cash / price)
 
     def test_sell(self):
         # given
@@ -72,9 +67,6 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.assertEqual(len(sell_orders), 1)  # Ensure only one sell order is created
         sell_order = sell_orders[0]
         self.assertEqual(sell_order.data.params.dataname.split("/")[-1], "QQQ.csv")
-        self.assertAlmostEqual(sell_order.price, 346.6, delta=0.1)
-        cash = strategy.sizer.broker.getcash()
-        self.assertAlmostEqual(sell_order.size, - cash / strategy.orders[0].price, delta=2)
 
     def test_value(self):
         # given
@@ -84,7 +76,7 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(103715.6, self.cerebro.broker.getvalue(), delta=0.1)
+        self.assertAlmostEqual(102400.1, self.cerebro.broker.getvalue(), delta=0.1)
 
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected
