@@ -44,11 +44,6 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
                 fromdate=bt.datetime.datetime(2023, 6, 2),
                 todate=bt.datetime.datetime(2023, 6, 8)
             )
-
-            data.start()
-
-            # Add the Data Feed to Cerebro
-            data.plotinfo.plot = False
             self.cerebro.adddata(data)
             self.datas.append(data)
 
