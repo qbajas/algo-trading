@@ -77,13 +77,13 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
 
     def test_value(self):
         # given
-        self.load_data(fromdate=bt.datetime.datetime(2022, 1, 1), todate=bt.datetime.datetime(2023, 1, 1))
+        self.load_data(fromdate=bt.datetime.datetime(2022, 11, 10), todate=bt.datetime.datetime(2023, 6, 30))
 
         # when
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(103369.8, self.cerebro.broker.getvalue(), delta=0.1)
+        self.assertAlmostEqual(128733.8, self.cerebro.broker.getvalue(), delta=0.1)
 
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected

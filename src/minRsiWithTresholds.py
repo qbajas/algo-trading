@@ -35,6 +35,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
         self.buyBondsOnly = False
         self.doBuy = True
         self.minRsiElement = 5
+        self.buyRsi = 0
 
     def next(self):
         self.previousMinRsiElement = self.minRsiElement
@@ -46,7 +47,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
         # buy only if some rsi below 90
         self.doBuy = False
         for i in range(0, len(self.datas)):
-            if self.rsi[i] < 90:
+            if self.rsi[i] < 70:
                 self.doBuy = True
 
         # buy bonds if all stock rsi over 70
@@ -78,11 +79,23 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
 
-        # if self.rsi[self.minRsiElement][0] + 1 > self.rsi[self.previousMinRsiElement][0]:
+        # reduce number of trades:
+
+        # if rsi of the asset fell by too much compared to previous day, do not change the asset
+        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
+            self.minRsiElement = self.previousMinRsiElement
+
+        # if the new asset has rsi too big compared to the current one, do not change it
+        # if self.rsi[self.minRsiElement][0] + 2 > self.rsi[self.previousMinRsiElement][0]:
         #     self.minRsiElement = self.previousMinRsiElement
 
-        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0]:
-            self.minRsiElement = self.previousMinRsiElement
+        # if rsi fallen by too much compared to when bought, do not change the asset
+        # if self.buyRsi > self.rsi[self.previousMinRsiElement][0]:
+        #     self.minRsiElement = self.previousMinRsiElement
+
+        # if rsi lower than 20, do not change the asset
+        # if self.rsi[self.previousMinRsiElement][0] < 20:
+        #     self.minRsiElement = self.previousMinRsiElement
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log(" Selected stock: %s (RSI %d, price %d)" % (
@@ -116,6 +129,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
                     self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
                              exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
                 )
+                self.buyRsi = self.rsi[self.minRsiElement][0]
 
 
     def cancel_open_orders(self):

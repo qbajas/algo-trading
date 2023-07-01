@@ -37,10 +37,10 @@ class CurrentStrategy(bt.Strategy):
 
         # --- START effective strategy ---
 
-        # buy if any rsi below 90
+        # buy if any rsi below 70
         self.doBuy = False
         for i in range(0, len(self.datas)):
-            if self.rsi[i] < 90:
+            if self.rsi[i] < 70:
                 self.doBuy = True
 
         # buy stocks if any stock rsi below 15
@@ -49,6 +49,7 @@ class CurrentStrategy(bt.Strategy):
             if self.rsi[i] < 15:
                 self.buyStocksOnly = True
 
+        # compute the range
         if self.buyStocksOnly:
             self.startRange = 5
             self.endRange = len(self.datas)
@@ -56,12 +57,14 @@ class CurrentStrategy(bt.Strategy):
             self.startRange = 0
             self.endRange = len(self.datas)
 
+        # select the asset from the range
         self.minRsiElement = self.startRange
         for i in range(self.startRange, self.endRange):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
 
-        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0]:
+        # reduce number of trades
+        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
             self.minRsiElement = self.previousMinRsiElement
 
         # --- END effective strategy ---
