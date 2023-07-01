@@ -83,7 +83,7 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(103715.6, self.cerebro.broker.getvalue(), delta=0.1)
+        self.assertAlmostEqual(103369.8, self.cerebro.broker.getvalue(), delta=0.1)
 
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected

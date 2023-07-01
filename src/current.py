@@ -30,7 +30,7 @@ class CurrentStrategy(bt.Strategy):
                  bt.indicators.RSI_Safe(self.datas[i].close, period=3)) / 11
             )
 
-        self.minRsiElement = 0
+        self.minRsiElement = 5
 
     def next(self):
         self.previousMinRsiElement = self.minRsiElement
@@ -60,6 +60,9 @@ class CurrentStrategy(bt.Strategy):
         for i in range(self.startRange, self.endRange):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
+
+        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0]:
+            self.minRsiElement = self.previousMinRsiElement
 
         # --- END effective strategy ---
 

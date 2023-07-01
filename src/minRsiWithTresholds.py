@@ -34,9 +34,11 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
         self.buyStocksOnly = False
         self.buyBondsOnly = False
         self.doBuy = True
-        self.previousMinRsiElement = None
+        self.minRsiElement = 5
 
     def next(self):
+        self.previousMinRsiElement = self.minRsiElement
+
         self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
@@ -76,6 +78,12 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             if self.rsi[i] <= self.rsi[self.minRsiElement]:
                 self.minRsiElement = i
 
+        # if self.rsi[self.minRsiElement][0] + 1 > self.rsi[self.previousMinRsiElement][0]:
+        #     self.minRsiElement = self.previousMinRsiElement
+
+        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0]:
+            self.minRsiElement = self.previousMinRsiElement
+
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log(" Selected stock: %s (RSI %d, price %d)" % (
             self.datas[self.minRsiElement].params.dataname.split("/")[-1],
@@ -109,7 +117,6 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
                              exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
                 )
 
-        self.previousMinRsiElement = self.minRsiElement
 
     def cancel_open_orders(self):
         for i in range(len(self.orders)):
@@ -210,6 +217,7 @@ if __name__ == '__main__':
     cashstart = 100000.0
     cerebro.broker.setcash(cashstart)
     cerebro.broker.setcommission(leverage=cashstart, commission=0.000035)  # 0.0035% of the operation value
+    # cerebro.broker.setcommission(leverage=cashstart, commission=0.0006)
 
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
