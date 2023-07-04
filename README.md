@@ -22,6 +22,16 @@ python minRsiWithTresholds.py
 ## Sample output
 
 ```
+2023-06-30, Positions: 1, cash 695636
+2023-06-30,  Selected stock: SHY.csv (RSI 33, price 80)
+2023-06-30,  selling GLD.csv
+2023-06-30,  buying SHY.csv
+2023-07-03,  SELL GLD EXECUTED at price 178.61, cost 712773.6312497967, com 25.14132731317168
+2023-07-03,  BUY SHY EXECUTED at 80.82, cost 695206.686859368, com 24.33223404007788
+2023-07-03,   OPERATION PROFIT, GROSS 5550.006269394214, NET5499.917864987299
+2023-07-03, Positions: 1, cash 701137
+2023-07-03,  Selected stock: SHY.csv (RSI 17, price 80)
+Final Portfolio Value: 700,800
 Annualized return: 29.014496 percent
 OrderedDict([('sharperatio',
               1.0745926638137793)])
