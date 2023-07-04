@@ -50,3 +50,6 @@ OrderedDict([(2015, 0.05019344596513653),
 ```
 
 ![plot1](https://github.com/qbajas/backtesting/assets/682591/0cdfd4c0-6929-4308-81ff-a0eab502ae2f)
+
+## Support
+Ideas? Suggestions? Fell free to contact me at jaskowiecj@gmail.com
