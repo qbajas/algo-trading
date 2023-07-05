@@ -17,7 +17,7 @@ day = 0
 
 
 # Create a Stratey
-class TestStrategy(bt.Strategy):
+class MinRsi(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
@@ -32,6 +32,7 @@ class TestStrategy(bt.Strategy):
         self.setsizer(bt.sizers.AllInSizer())
 
         self.positioncount = 0
+        self.orders = []
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
@@ -49,17 +50,29 @@ class TestStrategy(bt.Strategy):
         self.log("  Selected stock: %s (RSI %d)" % (
             self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
+        self.cancel_open_orders()
+
         for i in range(len(self.datas)):
             if self.broker.getposition(datas[i]) and i != self.minRsiElement:
                 self.log(" selling ")
-                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98,
-                           valid=bt.datetime.timedelta(days=4))
+                self.orders.append(
+                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
+                )
 
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017,
-                     valid=bt.datetime.timedelta(days=4))
+            self.orders.append(
+                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
+            )
+
+    def cancel_open_orders(self):
+        for i in range(len(self.orders)):
+            self.log(" cancelling an order " + self.get_ticker_name(self.orders[i].data))
+            self.cancel(self.orders[i])
+
+    def get_ticker_name(self, data):
+        return data.params.dataname.split("/")[-1].split(".")[0]
 
     def notify_order(self, order):
         if order.status in [order.Completed]:
@@ -79,10 +92,10 @@ class TestStrategy(bt.Strategy):
                                                                          order.executed.value,
                                                                          order.executed.comm)
                 )
-            self.bar_executed = len(self)
+            self.orders.remove(order)
         elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
             self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
-        self.order = None
+            self.orders.remove(order)
 
     def notify_trade(self, trade):
         if not trade.isclosed:
@@ -96,7 +109,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro(cheat_on_open=True)
 
     # Add a strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(MinRsi)
 
     cerebro.addanalyzer(SharpeRatio)
     cerebro.addanalyzer(TimeDrawDown)

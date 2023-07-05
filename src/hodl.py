@@ -2,21 +2,16 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import locale
-import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
+import pprint
 
 # Import the backtrader platform
 import backtrader as bt
-
-import pprint
-
 # Create a Stratey
 from backtrader.analyzers import PeriodStats, AnnualReturn, Returns, SharpeRatio, TimeDrawDown
 
 day = 0
 
-class TestStrategy(bt.Strategy):
+class HodlStrategy(bt.Strategy):
 
     def log(self, txt, dt=None):
         ''' Logging function fot this strategy'''
@@ -70,7 +65,7 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     # Add a strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(HodlStrategy)
 
     cerebro.addanalyzer(SharpeRatio)
     cerebro.addanalyzer(TimeDrawDown)
