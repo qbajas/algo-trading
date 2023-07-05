@@ -80,22 +80,22 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
                 self.minRsiElement = i
 
         # reduce number of trades:
+        if self.previousMinRsiElement in range(self.startRange, self.endRange):
+            # if rsi of the asset fell by too much compared to previous day, do not change the asset
+            if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
+                self.minRsiElement = self.previousMinRsiElement
 
-        # if rsi of the asset fell by too much compared to previous day, do not change the asset
-        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
-            self.minRsiElement = self.previousMinRsiElement
+            # if the new asset has rsi too big compared to the current one, do not change it
+            # if self.rsi[self.minRsiElement][0] + 2 > self.rsi[self.previousMinRsiElement][0]:
+            #     self.minRsiElement = self.previousMinRsiElement
 
-        # if the new asset has rsi too big compared to the current one, do not change it
-        # if self.rsi[self.minRsiElement][0] + 2 > self.rsi[self.previousMinRsiElement][0]:
-        #     self.minRsiElement = self.previousMinRsiElement
+            # if rsi fallen by too much compared to when bought, do not change the asset
+            # if self.buyRsi > self.rsi[self.previousMinRsiElement][0]:
+            #     self.minRsiElement = self.previousMinRsiElement
 
-        # if rsi fallen by too much compared to when bought, do not change the asset
-        # if self.buyRsi > self.rsi[self.previousMinRsiElement][0]:
-        #     self.minRsiElement = self.previousMinRsiElement
-
-        # if rsi lower than 20, do not change the asset
-        # if self.rsi[self.previousMinRsiElement][0] < 20:
-        #     self.minRsiElement = self.previousMinRsiElement
+            # if rsi lower than 20, do not change the asset
+            # if self.rsi[self.previousMinRsiElement][0] < 20:
+            #     self.minRsiElement = self.previousMinRsiElement
 
         # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
         self.log(" Selected stock: %s (RSI %d, price %d)" % (
@@ -152,7 +152,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
                 # self.buyprice = order.executed.price
                 # self.buycom = order.executed.comm
             else:
-                self.positioncount -= 1
+                # self.positioncount -= 1
                 self.log(
                     ' SELL {} EXECUTED at price {}, cost {}, com {}'.format(
                         self.get_ticker_name(order.data), order.executed.price, order.executed.value,

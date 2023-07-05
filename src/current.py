@@ -64,8 +64,9 @@ class CurrentStrategy(bt.Strategy):
                 self.minRsiElement = i
 
         # reduce number of trades
-        if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
-            self.minRsiElement = self.previousMinRsiElement
+        if self.previousMinRsiElement in range(self.startRange, self.endRange):
+            if self.rsi[self.previousMinRsiElement][-1] > self.rsi[self.previousMinRsiElement][0] + 1:
+                self.minRsiElement = self.previousMinRsiElement
 
         # --- END effective strategy ---
 
