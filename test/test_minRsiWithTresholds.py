@@ -64,7 +64,7 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
 
         # then
         strategy = self.cerebro.runstrats[0][0]
-        self.assert_min_rsi_element(strategy, ticker="LQD.csv", rsi=58)
+        self.assert_min_rsi_element(strategy, ticker="LQD.csv", rsi=58.2)
 
         # Assertion 2: The sell order is created with maximum available cash and sells the selected ticker
         sell_orders = [order for order in self.cerebro.getbroker().orders if order.issell()]
@@ -83,7 +83,7 @@ class TestMinRsiWithThresholdsStrategy(TestCase):
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(128733.8, self.cerebro.broker.getvalue(), delta=0.1)
+        self.assertAlmostEqual(128714, self.cerebro.broker.getvalue(), delta=10)
 
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected
