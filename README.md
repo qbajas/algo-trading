@@ -59,4 +59,4 @@ OrderedDict([(2015, 0.05122567838026293),
 
 
 ## Support
-Ideas? Suggestions? Fell free to contact me at jaskowiecj@gmail.com
+Ideas? Suggestions? Feel free to contact me at jaskowiecj@gmail.com
