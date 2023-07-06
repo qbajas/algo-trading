@@ -151,7 +151,7 @@ if __name__ == '__main__':
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
             # Do not pass values before this date
-            fromdate=datetime.datetime(2022, 1, 1))
+            fromdate=datetime.datetime(2022, 11, 10))
         # Do not pass values before this date
         # todate=datetime.datetime(2015, 12, 31))
 
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         datas.append(data)
 
     # Set our desired cash start
-    cashstart = 110000.0
+    cashstart = 96000.0
     cerebro.broker.setcash(cashstart)
     cerebro.broker.setcommission(leverage=cashstart, commission=0.000035)  # 0.0035% of the operation value
 
