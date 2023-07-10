@@ -102,7 +102,7 @@ class CurrentStrategy(bt.Strategy):
 
         if self.previousMinRsiElement != self.minRsiElement or not self.doBuy:
             price = self.datas[self.previousMinRsiElement][0]
-            self.log("- CLOSE %s %s LIMIT" % (
+            self.log("- CLOSE %s %s MIDPRICE" % (
                 self.get_ticker_name(self.datas[self.previousMinRsiElement]),
                 format(price * 0.983, ".2f")))
             # simulate sell at any price to avoid handling edge cases where the order was not executed:
