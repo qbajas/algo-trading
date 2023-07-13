@@ -115,11 +115,9 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             # if self.rsi[self.previousMinRsiElement][0] < 20:
             #     self.minRsiElement = self.previousMinRsiElement
 
-        self.log("Selected stock: %s (RSI %d, price %d)" % (
-            self.datas[self.minRsiElement].params.dataname.split("/")[-1],
-            self.rsi[self.minRsiElement][0],
-            self.datas[self.minRsiElement][0])
-                 )
+        self.log("Selected stock: %s (rsi %d)" %
+                 (self.get_ticker_name(self.datas[self.minRsiElement]),
+                  self.rsi[self.minRsiElement][0]))
 
     def create_buy_order(self):
         sizing = self.getsizing(self.datas[self.minRsiElement])
