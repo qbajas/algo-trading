@@ -38,9 +38,27 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
         self.buyRsi = 0
 
     def next(self):
-        self.previousMinRsiElement = self.minRsiElement
+        self.compute_min_rsi_element()
 
-        self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
+        self.cancel_open_orders()
+
+        if not self.doBuy:
+            for i in range(len(self.datas)):
+                if self.broker.getposition(self.datas[i]):
+                    self.create_sell_order(i)
+
+        if self.doBuy:
+            for i in range(len(self.datas)):
+                if self.broker.getposition(self.datas[i]) and i != self.minRsiElement:
+                    self.create_sell_order(i)
+
+            if not self.broker.getposition(self.datas[self.minRsiElement]):
+                self.create_buy_order()
+                self.buyRsi = self.rsi[self.minRsiElement][0]
+
+    def compute_min_rsi_element(self):
+        self.previousMinRsiElement = self.minRsiElement
+        # self.log("Positions: %d, cash %d" % (self.positioncount, self.sizer.broker.getcash()))
         global day
         day += 1
 
@@ -97,40 +115,35 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             # if self.rsi[self.previousMinRsiElement][0] < 20:
             #     self.minRsiElement = self.previousMinRsiElement
 
-        # self.log("  buy: %s %s" % (self.buyBondsOnly, self.buyStocksOnly))
-        self.log(" Selected stock: %s (RSI %d, price %d)" % (
+        self.log("Selected stock: %s (RSI %d, price %d)" % (
             self.datas[self.minRsiElement].params.dataname.split("/")[-1],
             self.rsi[self.minRsiElement][0],
             self.datas[self.minRsiElement][0])
                  )
 
-        self.cancel_open_orders()
+    def create_buy_order(self):
+        sizing = self.getsizing(self.datas[self.minRsiElement])
+        price = self.datas[self.minRsiElement][0]
+        self.log("+ BUY %d %s @ %s LIMIT ($%d)" % (
+            sizing,
+            self.get_ticker_name(self.datas[self.minRsiElement]),
+            format(price * 1.017, ".2f"),
+            sizing * price)
+                 )
+        self.orders.append(
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
+        )
 
-        if not self.doBuy:
-            self.log(" selling ")
-            for i in range(len(self.datas)):
-                if self.broker.getposition(self.datas[i]):
-                    self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
-                    self.orders.append(
-                        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
-                    )
-
-        if self.doBuy:
-            for i in range(len(self.datas)):
-                if self.broker.getposition(self.datas[i]) and i != self.minRsiElement:
-                    self.log(" selling " + self.datas[i].params.dataname.split("/")[-1])
-                    self.orders.append(
-                        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.983)
-                    )
-
-            if not self.broker.getposition(self.datas[self.minRsiElement]):
-                self.log(" buying " + self.datas[self.minRsiElement].params.dataname.split("/")[-1])
-                self.orders.append(
-                    self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                             exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
-                )
-                self.buyRsi = self.rsi[self.minRsiElement][0]
-
+    def create_sell_order(self, i):
+        price = self.datas[i][0]
+        self.log("- CLOSE %s %s LIMIT" % (
+            self.get_ticker_name(self.datas[self.previousMinRsiElement]),
+            format(price * 0.983, ".2f"))
+                 )
+        self.orders.append(
+            self.close(data=self.datas[i], exectype=bt.Order.Limit, price=price * 0.983)
+        )
 
     def cancel_open_orders(self):
         for i in range(len(self.orders)):
@@ -146,17 +159,21 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
                 self.positioncount += 1
                 self.log(
                     ' BUY {} EXECUTED at {}, cost {}, com {}'.format(
-                        self.get_ticker_name(order.data), order.executed.price, order.executed.value,
-                        order.executed.comm)
+                        self.get_ticker_name(order.data),
+                        format(order.executed.price, ".2f"),
+                        format(order.executed.value, ".2f"),
+                        format(order.executed.comm, ".2f"))
                 )
                 # self.buyprice = order.executed.price
                 # self.buycom = order.executed.comm
             else:
-                # self.positioncount -= 1
+                self.positioncount -= 1
                 self.log(
                     ' SELL {} EXECUTED at price {}, cost {}, com {}'.format(
-                        self.get_ticker_name(order.data), order.executed.price, order.executed.value,
-                        order.executed.comm)
+                        self.get_ticker_name(order.data),
+                        format(order.executed.price, ".2f"),
+                        format(order.executed.value, ".2f"),
+                        format(order.executed.comm , ".2f"))
                 )
             self.orders.remove(order)
             # self.bar_executed = len(self)
@@ -168,8 +185,8 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
     def notify_trade(self, trade):
         if not trade.isclosed:
             return
-        self.log('  OPERATION PROFIT, GROSS {}, NET{}'.format(trade.pnl,
-                                                              trade.pnlcomm))
+        self.log('  OPERATION PROFIT, GROSS {}, NET{}'.format(format(trade.pnl, ".2f"),
+                                                              format(trade.pnlcomm, ".2f")))
 
 
 if __name__ == '__main__':
