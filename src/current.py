@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # Set our desired cash start
     cashstart = 96000.0
     cerebro.broker.setcash(cashstart)
-    cerebro.broker.setcommission(leverage=cashstart, commission=0.000035)  # 0.0035% of the operation value
+    cerebro.broker.setcommission(leverage=cashstart, commission=0.00007)  # 0.007% of the operation value
 
     # Run over everything
     run = cerebro.run()
