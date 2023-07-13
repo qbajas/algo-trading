@@ -50,6 +50,10 @@ class TestCurrentStrategy(TestCase):
         self.assertEqual(len(buy_orders), 1)  # Ensure only one buy order is created
         buy_order = buy_orders[0]
         self.assertEqual(buy_order.data.params.dataname.split("/")[-1], "QQQ.csv")
+        self.assertAlmostEqual(buy_order.price, 354.2, delta=0.1)
+        cash = strategy.sizer.broker.getcash()
+        price = strategy.datas[strategy.minRsiElement][0]
+        self.assertEqual(buy_order.size, cash / price)
 
     def test_sell(self):
         # given
@@ -67,6 +71,9 @@ class TestCurrentStrategy(TestCase):
         self.assertEqual(len(sell_orders), 1)  # Ensure only one sell order is created
         sell_order = sell_orders[0]
         self.assertEqual(sell_order.data.params.dataname.split("/")[-1], "QQQ.csv")
+        self.assertAlmostEqual(sell_order.price, 346.6, delta=0.1)
+        cash = strategy.sizer.broker.getcash()
+        self.assertAlmostEqual(sell_order.size, - cash / strategy.orders[0].price, delta=2)
 
     def test_value(self):
         # given
