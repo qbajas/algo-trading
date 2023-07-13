@@ -22,6 +22,7 @@ class CurrentStrategy(MinRsiWithThresholdsStrategy):
         if self.datas[0].datetime.date(0) >= datetime.date.today() - datetime.timedelta(days=7):
             print('%s, %s' % (dt.isoformat(), txt))
 
+    # TODO remove
     # def __init__(self):
     #     self.setsizer(bt.sizers.AllInSizer())
     #
@@ -50,10 +51,6 @@ class CurrentStrategy(MinRsiWithThresholdsStrategy):
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
 
-
-
-def get_ticker_name(self, data):
-        return data.params.dataname.split("/")[-1].split(".")[0]
 
 
 if __name__ == '__main__':
