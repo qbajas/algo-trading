@@ -1,14 +1,9 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-
 import datetime  # For datetime objects
-
 # Import the backtrader platform
 import backtrader as bt
 import locale
-
-
-# Create a Stratey
 from minRsiWithTresholds import MinRsiWithThresholdsStrategy
 
 
@@ -21,20 +16,6 @@ class CurrentStrategy(MinRsiWithThresholdsStrategy):
         # print only last days
         if self.datas[0].datetime.date(0) >= datetime.date.today() - datetime.timedelta(days=7):
             print('%s, %s' % (dt.isoformat(), txt))
-
-    # TODO remove
-    # def __init__(self):
-    #     self.setsizer(bt.sizers.AllInSizer())
-    #
-    #     self.positioncount = 0
-    #     self.rsi = []
-    #     for i in range(len(self.datas)):
-    #         self.rsi.append(
-    #             (10 * bt.indicators.RSI_Safe(self.datas[i].close, period=2) +
-    #              bt.indicators.RSI_Safe(self.datas[i].close, period=3)) / 11
-    #         )
-    #
-    #     self.minRsiElement = 5
 
     def next(self):
         self.log("")
@@ -50,7 +31,6 @@ class CurrentStrategy(MinRsiWithThresholdsStrategy):
 
         if self.datas[0].datetime.date(0) == datetime.date.today():
             self.log("---------------")
-
 
 
 if __name__ == '__main__':
