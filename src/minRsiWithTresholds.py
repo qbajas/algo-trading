@@ -135,7 +135,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
 
     def create_sell_order(self, i):
         price = self.datas[i][0]
-        self.log("- CLOSE %s %s LIMIT" % (
+        self.log("- CLOSE %s @ %s LIMIT" % (
             self.get_ticker_name(self.datas[self.previousMinRsiElement]),
             format(price * 0.983, ".2f"))
                  )
