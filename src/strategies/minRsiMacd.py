@@ -48,9 +48,8 @@ class MinRsiMacd(BaseStrategy):
 
         self.minRsiElement = self.score.index(max(self.score))
 
-
         self.log("  Selected stock: %s (RSI %d)" % (
-        self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
+            self.datas[self.minRsiElement].params.dataname.split("/")[-1], self.rsi[self.minRsiElement][0]))
 
         self.cancel_open_orders()
 
@@ -90,10 +89,10 @@ if __name__ == '__main__':
         "LQD",
 
         "SPY",
-        # "SPMO",
+        "SPMO",
         #
         "EFA",
-        # "IMTM",
+        "IMTM",
         #
         "QQQ",
         "EEM",
