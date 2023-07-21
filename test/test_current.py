@@ -73,7 +73,7 @@ class TestCurrentStrategy(TestCase):
         self.assertEqual(sell_order.data.params.dataname.split("/")[-1], "QQQ.csv")
         self.assertAlmostEqual(sell_order.price, 346.6, delta=0.1)
         cash = strategy.sizer.broker.getcash()
-        self.assertAlmostEqual(sell_order.size, - cash / strategy.orders[0].price, delta=2)
+        self.assertAlmostEqual(sell_order.size, - cash / sell_orders[0].price, delta=2)
 
     def test_value(self):
         # given

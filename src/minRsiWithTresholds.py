@@ -8,22 +8,18 @@ import pprint
 import backtrader as bt
 from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
 
+from base import BaseStrategy
+
 day = 0
 
 
 # Create a Stratey
-class MinRsiWithThresholdsStrategy(bt.Strategy):
-
-    def log(self, txt, dt=None):
-        ''' Logging function fot this strategy'''
-        dt = dt or self.datas[0].datetime.date(0)
-        print('%s, %s' % (dt.isoformat(), txt))
+class MinRsiWithThresholdsStrategy(BaseStrategy):
 
     def __init__(self):
+        super().__init__()
         self.setsizer(bt.sizers.AllInSizer())
 
-        self.positioncount = 0
-        self.orders = []
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(
@@ -128,10 +124,8 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             format(price * 1.017, ".2f"),
             sizing * price)
                  )
-        self.orders.append(
-            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
-        )
+        self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                 exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
 
     def create_sell_order(self, i):
         price = self.datas[i][0]
@@ -139,52 +133,7 @@ class MinRsiWithThresholdsStrategy(bt.Strategy):
             self.get_ticker_name(self.datas[self.previousMinRsiElement]),
             format(price * 0.983, ".2f"))
                  )
-        self.orders.append(
-            self.close(data=self.datas[i], exectype=bt.Order.Limit, price=price * 0.983)
-        )
-
-    def cancel_open_orders(self):
-        for i in range(len(self.orders)):
-            self.log(" cancelling an order " + self.get_ticker_name(self.orders[i].data))
-            self.cancel(self.orders[i])
-
-    def get_ticker_name(self, data):
-        return data.params.dataname.split("/")[-1].split(".")[0]
-
-    def notify_order(self, order):
-        if order.status in [order.Completed]:
-            if order.isbuy():
-                self.positioncount += 1
-                self.log(
-                    ' BUY {} EXECUTED at {}, cost {}, com {}'.format(
-                        self.get_ticker_name(order.data),
-                        format(order.executed.price, ".2f"),
-                        format(order.executed.value, ".2f"),
-                        format(order.executed.comm, ".2f"))
-                )
-                # self.buyprice = order.executed.price
-                # self.buycom = order.executed.comm
-            else:
-                self.positioncount -= 1
-                self.log(
-                    ' SELL {} EXECUTED at price {}, cost {}, com {}'.format(
-                        self.get_ticker_name(order.data),
-                        format(order.executed.price, ".2f"),
-                        format(order.executed.value, ".2f"),
-                        format(order.executed.comm , ".2f"))
-                )
-            self.orders.remove(order)
-            # self.bar_executed = len(self)
-        elif order.status in [order.Canceled, order.Expired, order.Margin, order.Rejected]:
-            self.log(' WARNING: Order %s Canceled/Expired/Margin/Rejected %s'
-                     % (self.get_ticker_name(order.data), order.status))
-            self.orders.remove(order)
-
-    def notify_trade(self, trade):
-        if not trade.isclosed:
-            return
-        self.log('  OPERATION PROFIT, GROSS {}, NET{}'.format(format(trade.pnl, ".2f"),
-                                                              format(trade.pnlcomm, ".2f")))
+        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=price * 0.983)
 
 
 if __name__ == '__main__':

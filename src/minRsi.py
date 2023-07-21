@@ -1,38 +1,25 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import datetime  # For datetime objects
-import os.path  # To manage paths
-import sys  # To find out the script name (in argv[0])
+import locale
+import pprint
 
 # Import the backtrader platform
 import backtrader as bt
-import locale
+from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, Returns, AnnualReturn
 
-import pprint
-
-from backtrader.analyzers import SharpeRatio, TimeDrawDown, PeriodStats, TimeReturn, Returns, AnnualReturn
+from base import BaseStrategy
 
 day = 0
 
 
 # Create a Stratey
-class MinRsi(bt.Strategy):
-
-    def log(self, txt, dt=None):
-        ''' Logging function fot this strategy'''
-        dt = dt or self.datas[0].datetime.date(0)
-        print('%s, %s' % (dt.isoformat(), txt))
+class MinRsi(BaseStrategy):
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
-        # self.rsi0 = bt.indicators.RSI_Safe(self.datas[0].close, period=14)
-        # self.rsi1 = bt.indicators.RSI_Safe(self.datas[1].close, period=14)
-        # self.setsizer(bt.sizers.PercentSizerInt(percents=20))
+        super().__init__()
         self.setsizer(bt.sizers.AllInSizer())
 
-        self.positioncount = 0
-        self.orders = []
         self.rsi = []
         for i in range(len(self.datas)):
             self.rsi.append(bt.indicators.RSI_Safe(self.datas[i].close, period=2))
@@ -55,58 +42,17 @@ class MinRsi(bt.Strategy):
         for i in range(len(self.datas)):
             if self.broker.getposition(datas[i]) and i != self.minRsiElement:
                 self.log(" selling ")
-                self.orders.append(
-                    self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
-                )
+                self.close(data=self.datas[i], exectype=bt.Order.Limit, price=self.datas[i][0] * 0.98)
 
         if not self.broker.getposition(datas[self.minRsiElement]):
             self.log(" buying size %f" % self.getsizing(self.datas[self.minRsiElement]))
-            self.orders.append(
-                self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                         exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
-            )
-
-    def cancel_open_orders(self):
-        for i in range(len(self.orders)):
-            self.log(" cancelling an order " + self.get_ticker_name(self.orders[i].data))
-            self.cancel(self.orders[i])
-
-    def get_ticker_name(self, data):
-        return data.params.dataname.split("/")[-1].split(".")[0]
-
-    def notify_order(self, order):
-        if order.status in [order.Completed]:
-            if order.isbuy():
-                self.positioncount += 1
-                self.log(
-                    ' BUY EXECUTED at {}, cost {}, com {}'.format(order.executed.price,
-                                                                  order.executed.value,
-                                                                  order.executed.comm)
-                )
-                self.buyprice = order.executed.price
-                self.buycom = order.executed.comm
-            else:
-                self.positioncount = 0
-                self.log(
-                    ' SELL EXECUTED at price {}, cost {}, com {}'.format(order.executed.price,
-                                                                         order.executed.value,
-                                                                         order.executed.comm)
-                )
-            self.orders.remove(order)
-        elif order.status in [order.Canceled, order.Margin, order.Rejected, order.Expired]:
-            self.log('WARNING: Order Canceled/Margin/Rejected/Expired %s' % order.status)
-            self.orders.remove(order)
-
-    def notify_trade(self, trade):
-        if not trade.isclosed:
-            return
-        self.log('  OPERATION PROFIT, GROSS {}, NET{}'.format(trade.pnl,
-                                                              trade.pnlcomm))
+            self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
+                     exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
 
 
 if __name__ == '__main__':
     # Create a cerebro entity
-    cerebro = bt.Cerebro(cheat_on_open=True)
+    cerebro = bt.Cerebro()
 
     # Add a strategy
     cerebro.addstrategy(MinRsi)
