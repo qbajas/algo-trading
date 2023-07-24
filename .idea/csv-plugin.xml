@@ -1273,7 +1273,7 @@
         <entry key="\resources\tickers\QQQ.csv">
           <value>
             <Attribute>
-              <option name="separator" value=":" />
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
@@ -1481,6 +1481,13 @@
           </value>
         </entry>
         <entry key="\resources\tickers\TMO.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\tickers\TQQQ.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
