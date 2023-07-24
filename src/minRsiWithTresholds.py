@@ -180,6 +180,7 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
+            adjclose=False,
             # Do not pass values before this date
             fromdate=bt.datetime.datetime(2015, 11, 1)
             # fromdate=bt.datetime.datetime(2014, 10, 5)

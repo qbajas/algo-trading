@@ -69,6 +69,7 @@ if __name__ == '__main__':
         # Create a Data Feed
         data = bt.feeds.YahooFinanceCSVData(
             dataname="../resources/tickers/" + ticker + ".csv",
+            adjclose=False,
             # Do not pass values before this date
             fromdate=datetime.datetime(2022, 11, 10))
         # Do not pass values before this date

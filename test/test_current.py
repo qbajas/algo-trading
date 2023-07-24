@@ -50,7 +50,7 @@ class TestCurrentStrategy(TestCase):
         self.assertEqual(len(buy_orders), 1)  # Ensure only one buy order is created
         buy_order = buy_orders[0]
         self.assertEqual(buy_order.data.params.dataname.split("/")[-1], "QQQ.csv")
-        self.assertAlmostEqual(buy_order.price, 354.2, delta=0.1)
+        self.assertAlmostEqual(buy_order.price, 354.7, delta=0.1)
         cash = strategy.sizer.broker.getcash()
         price = strategy.datas[strategy.minRsiElement][0]
         self.assertEqual(buy_order.size, cash / price)
@@ -64,14 +64,14 @@ class TestCurrentStrategy(TestCase):
 
         # then
         strategy = self.cerebro.runstrats[0][0]
-        self.assert_min_rsi_element(strategy, ticker="LQD.csv", rsi=58.2)
+        self.assert_min_rsi_element(strategy, ticker="EFA.csv", rsi=45.2)
 
         # Assertion 2: The sell order is created with maximum available cash and sells the selected ticker
         sell_orders = [order for order in self.cerebro.getbroker().orders if order.issell()]
         self.assertEqual(len(sell_orders), 1)  # Ensure only one sell order is created
         sell_order = sell_orders[0]
         self.assertEqual(sell_order.data.params.dataname.split("/")[-1], "QQQ.csv")
-        self.assertAlmostEqual(sell_order.price, 346.6, delta=0.1)
+        self.assertAlmostEqual(sell_order.price, 347.1, delta=0.1)
         cash = strategy.sizer.broker.getcash()
         self.assertAlmostEqual(sell_order.size, - cash / sell_orders[0].price, delta=2)
 
@@ -83,7 +83,7 @@ class TestCurrentStrategy(TestCase):
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(753447, self.cerebro.broker.getvalue(), delta=1)
+        self.assertAlmostEqual(593492, self.cerebro.broker.getvalue(), delta=1)
 
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected
@@ -98,6 +98,7 @@ class TestCurrentStrategy(TestCase):
             # Create a Data Feed
             data = bt.feeds.YahooFinanceCSVData(
                 dataname="../resources/tickers/" + ticker + ".csv",
+                adjclose=False,
                 fromdate=fromdate,
                 todate=todate
             )
