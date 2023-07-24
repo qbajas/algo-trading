@@ -58,7 +58,7 @@ class MinRsiWithThresholdsStrategy(BaseStrategy):
         global day
         day += 1
 
-        # buy only if some rsi below 90
+        # buy only if some rsi below 70
         self.doBuy = False
         for i in range(0, len(self.datas)):
             if self.rsi[i] < 70:
@@ -116,24 +116,26 @@ class MinRsiWithThresholdsStrategy(BaseStrategy):
                   self.rsi[self.minRsiElement][0]))
 
     def create_buy_order(self):
+        price_multiplier = 1.017
         sizing = self.getsizing(self.datas[self.minRsiElement])
         price = self.datas[self.minRsiElement][0]
         self.log("+ BUY %d %s @ %s LIMIT ($%d)" % (
             sizing,
             self.get_ticker_name(self.datas[self.minRsiElement]),
-            format(price * 1.017, ".2f"),
+            format(price * price_multiplier, ".2f"),
             sizing * price)
                  )
         self.buy(data=self.datas[self.minRsiElement], size=self.getsizing(self.datas[self.minRsiElement]),
-                 exectype=bt.Order.Limit, price=self.datas[self.minRsiElement][0] * 1.017)
+                 exectype=bt.Order.Limit, price=price * price_multiplier)
 
     def create_sell_order(self, i):
+        price_multiplier = 0.983
         price = self.datas[i][0]
         self.log("- CLOSE %s @ %s LIMIT" % (
             self.get_ticker_name(self.datas[self.previousMinRsiElement]),
-            format(price * 0.983, ".2f"))
+            format(price * price_multiplier, ".2f"))
                  )
-        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=price * 0.983)
+        self.close(data=self.datas[i], exectype=bt.Order.Limit, price=price * price_multiplier)
 
 
 if __name__ == '__main__':
