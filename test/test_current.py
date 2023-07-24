@@ -95,6 +95,7 @@ class TestCurrentStrategy(TestCase):
         # then
         strategy = self.cerebro.runstrats[0][0]
         self.assert_min_rsi_element(strategy, ticker="IWM.csv", rsi=25.1)
+        self.assertAlmostEqual(strategy.rsi[strategy.previousMinRsiElement][-1], 37.1, delta=0.1)
         self.assertEqual(strategy.previousMinRsiElement, strategy.minRsiElement)
 
     # def test_do_not_buy_when_min_rsi_above_70(self):
