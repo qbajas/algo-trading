@@ -85,6 +85,12 @@ class TestCurrentStrategy(TestCase):
         # then
         self.assertAlmostEqual(593492, self.cerebro.broker.getvalue(), delta=1)
 
+    # def test_do_not_buy_when_min_rsi_above_70(self):
+
+    # def test_buy_stock_if_any_stock_rsi_below_15(self):
+
+    # def test_do_not_sell_when_rsi_dropped_more_than_1(self):
+
     def assert_min_rsi_element(self, strategy, ticker, rsi):
         # the ticker with the lowest RSI score is selected
         selected_ticker = strategy.datas[strategy.minRsiElement].params.dataname.split("/")[-1]
