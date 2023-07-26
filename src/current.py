@@ -51,11 +51,7 @@ if __name__ == '__main__':
 
         # the rest need to be stocks
         "SPY",
-        "SPMO",
-
         "EFA",
-        "IMTM",
-
         "QQQ",
         "EEM",
         "IWM",

@@ -8,11 +8,7 @@ tickers = [
     "LQD",
 
     "SPY",
-    "SPMO",
-
     "EFA",
-    "IMTM",
-
     "QQQ",
     "EEM",
     "IWM",

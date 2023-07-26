@@ -21,11 +21,7 @@ class TestCurrentStrategy(TestCase):
             "LQD",
 
             "SPY",
-            "SPMO",
-
             "EFA",
-            "IMTM",
-
             "QQQ",
             "EEM",
             "IWM",
@@ -83,7 +79,7 @@ class TestCurrentStrategy(TestCase):
         self.cerebro.run()
 
         # then
-        self.assertAlmostEqual(593492, self.cerebro.broker.getvalue(), delta=1)
+        self.assertAlmostEqual(474426, self.cerebro.broker.getvalue(), delta=1)
 
     def test_do_not_change_when_rsi_dropped_by_more_than_1(self):
         # given
